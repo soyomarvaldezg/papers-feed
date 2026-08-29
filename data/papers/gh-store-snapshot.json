@@ -1,5 +1,272 @@
 {
-  "snapshot_time": "2026-08-26T00:00:00+00:00",
+  "snapshot_time": "2026-08-29T22:44:48.043013+00:00",
   "repository": "soyomarvaldezg/papers-feed",
-  "objects": {}
+  "objects": {
+    "interactions:arxiv.2608.22474": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2608.22474",
+        "interactions": []
+      },
+      "meta": {
+        "issue_number": 12,
+        "object_id": "interactions:arxiv.2608.22474",
+        "created_at": "2026-08-29T22:44:10+00:00",
+        "updated_at": "2026-08-29T22:44:12+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2608.22474": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2608.22474",
+        "url": "https://arxiv.org/abs/2608.22474",
+        "title": "Data Quality Assessments: A Theoretically Structured Overview of Approaches and Methods",
+        "authors": "Ralph Foorthuis",
+        "abstract": "The quality of data is crucial for both practice and academia, and this holds for descriptive statistics, AI and advanced analytics alike. This study addresses an apparent gap in the literature and as such presents a full and theoretically grounded overview of data quality assessment approaches and methods, as well as their defining characteristics and inter-relationships. For this purpose a broad typology is introduced that employs two theoretical dimensions, namely the evaluation logic (formal versus informal) and the assessment driver (norms versus data). This yields four high-level approaches and 15 methods for assessing data quality. The research results are relevant for academia, as they provide a theory-based overview and definition of the ways that data quality can be evaluated. The study is also relevant for practice because it allows professionals to make informed decisions on using these methods, e.g. as part of an audit or broad data quality assessment strategy.",
+        "timestamp": "2026-08-29T22:44:00.523Z",
+        "rating": "novote",
+        "publishedDate": "2026/08/23",
+        "tags": [
+          "Other Statistics (stat.OT)",
+          "Databases (cs.DB)",
+          "Methodology (stat.ME)"
+        ],
+        "doi": "",
+        "journalName": "",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 10,
+        "object_id": "paper:arxiv.2608.22474",
+        "created_at": "2026-08-29T22:44:00+00:00",
+        "updated_at": "2026-08-29T22:44:20+00:00",
+        "version": 1
+      }
+    },
+    "interactions:arxiv.2608.23402": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2608.23402",
+        "interactions": []
+      },
+      "meta": {
+        "issue_number": 9,
+        "object_id": "interactions:arxiv.2608.23402",
+        "created_at": "2026-08-29T22:43:55+00:00",
+        "updated_at": "2026-08-29T22:43:57+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2608.23402": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2608.23402",
+        "url": "https://arxiv.org/abs/2608.23402",
+        "title": "EXPLAIN Yourself! Finding Query Planner Stalls Across DBMSes",
+        "authors": "Geoffrey X. Yu, Ryan Marcus, Tim Kraska",
+        "abstract": "Query planners are typically expected to produce optimized plans quickly, leading many researchers (including the authors of this paper) and practitioners to design systems that assume query planning is a low-cost operation. Using a lightweight agentic search, we show that this assumption does not always hold. Across seven DBMSes, including four commercial systems, we find at least one query per system that takes more than three minutes to plan. In addition to being slow to plan, such queries risk tying up database resources without performing useful work, creating a potential denial-of-service vector. We analyze the queries our search uncovers and compare how the seven systems respond to each pattern. We find that although the queries triggering slow planning are largely DBMS-specific, recurring pathologies involving correlated subqueries, CTE expansion, repeated subquery expressions, disjunctive joins, and constant folding affect multiple systems. We release our uncovered queries along with a curated suite of parameterized query pathologies that researchers and database engineers can use to test planner robustness. Overall, our results show that query planning cannot always be treated as a predictably inexpensive operation and that its latency and robustness deserve further attention from both database researchers and engineers.",
+        "timestamp": "2026-08-29T22:43:43.826Z",
+        "rating": "novote",
+        "publishedDate": "2026/08/24",
+        "tags": [
+          "Databases (cs.DB)"
+        ],
+        "doi": "",
+        "journalName": "",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 7,
+        "object_id": "paper:arxiv.2608.23402",
+        "created_at": "2026-08-29T22:43:44+00:00",
+        "updated_at": "2026-08-29T22:44:05+00:00",
+        "version": 1
+      }
+    },
+    "interactions:arxiv.2608.25663": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2608.25663",
+        "interactions": [
+          {
+            "type": "reading_session",
+            "timestamp": "2026-08-29T22:40:35.337Z",
+            "data": {
+              "session_id": "session_1788043235095_dz6nh2y",
+              "source_id": "arxiv",
+              "paper_id": "2608.25663",
+              "start_time": "2026-08-29T22:40:18.615Z",
+              "end_time": "2026-08-29T22:40:35.095Z",
+              "heartbeat_count": 3,
+              "duration_seconds": 15,
+              "idle_seconds": 1,
+              "total_elapsed_seconds": 16
+            }
+          }
+        ]
+      },
+      "meta": {
+        "issue_number": 6,
+        "object_id": "interactions:arxiv.2608.25663",
+        "created_at": "2026-08-29T22:39:32+00:00",
+        "updated_at": "2026-08-29T22:40:52+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2608.25663": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2608.25663",
+        "url": "https://arxiv.org/abs/2608.25663",
+        "title": "Data Citation for Large Language Models: A Challenge",
+        "authors": "Gianmaria Silvello",
+        "abstract": "Large language models increasingly mediate access to information, and a growing body of work asks whether they cite the sources behind their outputs. That work treats citation as a verification device and applies it to textual documents. Scholarly citation serves two further functions, credit and provenance, and it applies to data as much as to text. This paper argues that data citation for large language models is an open challenge, distinct from document-level citation grounding and harder to solve. We ask how such models should cite data so that outputs stay verifiable, provenance stays traceable, and credit reaches data creators and curators. We set out three research directions. Training data attribution has to turn influence estimates into references for corpora absorbed into model parameters. Data citation at inference time has to identify datasets, subsets, and query results at the right granularity and fixity. Citing knowledge graph facts has to define what a reference to a single triple denotes and how credit propagates along provenance. Progress on all three depends on joint work across the database, information retrieval, knowledge representation, and artificial intelligence communities.",
+        "timestamp": "2026-08-29T22:39:12.813Z",
+        "rating": "novote",
+        "publishedDate": "2026/08/26",
+        "tags": [
+          "Information Retrieval (cs.IR)",
+          "Artificial Intelligence (cs.AI)",
+          "Databases (cs.DB)",
+          "Digital Libraries (cs.DL)"
+        ],
+        "doi": "",
+        "journalName": "",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 5,
+        "object_id": "paper:arxiv.2608.25663",
+        "created_at": "2026-08-29T22:39:13+00:00",
+        "updated_at": "2026-08-29T22:39:34+00:00",
+        "version": 1
+      }
+    },
+    "interactions:arxiv.2608.27244": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2608.27244",
+        "interactions": []
+      },
+      "meta": {
+        "issue_number": 4,
+        "object_id": "interactions:arxiv.2608.27244",
+        "created_at": "2026-08-29T22:37:55+00:00",
+        "updated_at": "2026-08-29T22:37:56+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2608.27244": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2608.27244",
+        "url": "https://arxiv.org/abs/2608.27244",
+        "title": "Compositional Online Learning for Semantic Data Processing Systems",
+        "authors": "Pawe\u0142 Liskowski, Fuheng Zhao, Benjamin Han, Anupam Datta, Dimitris Tsirogiannis",
+        "abstract": "An LLM call in a semantic data processing system is expensive enough to dominate query cost, yet slow enough to hide a CPU-side learner's update behind its round-trip. In production, LLM compute accounts for $80-90\\%$ of query cost, and each call costs $10^5-10^7\\times$ a relational predicate. The latency window inverts a design constraint of classical adaptive query processing, where online learners had to stay lightweight to avoid dominating the predicates they optimize. At LLM latency, per-call gradient steps and per-batch threshold solves fit inside the round-trip. We develop compositional online learning at the LLM call boundary: a framework for combining online-learning components in semantic data processing systems. Each component makes execution-time decisions and refines its learned artifacts online. The design space spans two axes, decision granularity and learner update cadence, and the components share a single learning pattern that hides each trainer step inside the next LLM round-trip. A production case study in Cortex AISQL composes three components: a memoization layer, an online per-call filter-ordering learner, and an online per-batch cascade-routing learner. A conditional cost decomposition assigns each learning component to a distinct factor of per-row LLM cost. Under independence, the two learning components compose multiplicatively to an $11.4\\times$ upper bound on a representative conjunction-filter workload. Self-selection at the cascade boundary, sample-budget shrinkage, and selectivity-estimation drift reduce it to a realistic figure near $8\\times$.",
+        "timestamp": "2026-08-29T22:33:35.758Z",
+        "rating": "novote",
+        "publishedDate": "2026/08/27",
+        "tags": [
+          "Databases (cs.DB)",
+          "Artificial Intelligence (cs.AI)"
+        ],
+        "doi": "",
+        "journalName": "",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 3,
+        "object_id": "paper:arxiv.2608.27244",
+        "created_at": "2026-08-29T22:33:36+00:00",
+        "updated_at": "2026-08-29T22:33:54+00:00",
+        "version": 1
+      }
+    },
+    "interactions:arxiv.2608.26117": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2608.26117",
+        "interactions": [
+          {
+            "type": "reading_session",
+            "timestamp": "2026-08-29T22:33:28.074Z",
+            "data": {
+              "session_id": "session_1788042808061_jdt19rn",
+              "source_id": "arxiv",
+              "paper_id": "2608.26117",
+              "start_time": "2026-08-29T22:33:17.885Z",
+              "end_time": "2026-08-29T22:33:28.061Z",
+              "heartbeat_count": 2,
+              "duration_seconds": 10,
+              "idle_seconds": 0,
+              "total_elapsed_seconds": 10
+            }
+          },
+          {
+            "type": "reading_session",
+            "timestamp": "2026-08-29T22:38:53.029Z",
+            "data": {
+              "session_id": "session_1788043133019_y9jgowu",
+              "source_id": "arxiv",
+              "paper_id": "2608.26117",
+              "start_time": "2026-08-29T22:38:47.277Z",
+              "end_time": "2026-08-29T22:38:53.019Z",
+              "heartbeat_count": 1,
+              "duration_seconds": 5,
+              "idle_seconds": 1,
+              "total_elapsed_seconds": 6
+            }
+          },
+          {
+            "type": "reading_session",
+            "timestamp": "2026-08-29T22:41:28.467Z",
+            "data": {
+              "session_id": "session_1788043288457_jqavyxn",
+              "source_id": "arxiv",
+              "paper_id": "2608.26117",
+              "start_time": "2026-08-29T22:41:23.336Z",
+              "end_time": "2026-08-29T22:41:28.457Z",
+              "heartbeat_count": 1,
+              "duration_seconds": 5,
+              "idle_seconds": 0,
+              "total_elapsed_seconds": 5
+            }
+          }
+        ]
+      },
+      "meta": {
+        "issue_number": 2,
+        "object_id": "interactions:arxiv.2608.26117",
+        "created_at": "2026-08-29T22:28:21+00:00",
+        "updated_at": "2026-08-29T22:41:49+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2608.26117": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2608.26117",
+        "url": "https://arxiv.org/pdf/2608.26117",
+        "title": "",
+        "authors": "",
+        "abstract": "",
+        "timestamp": "2026-08-29T22:25:43.580Z",
+        "rating": "novote",
+        "publishedDate": "",
+        "tags": [],
+        "doi": "",
+        "journalName": "",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 1,
+        "object_id": "paper:arxiv.2608.26117",
+        "created_at": "2026-08-29T22:25:44+00:00",
+        "updated_at": "2026-08-29T22:26:04+00:00",
+        "version": 1
+      }
+    }
+  }
 }
