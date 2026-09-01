@@ -1,5 +1,5 @@
 {
-  "snapshot_time": "2026-08-29T23:50:42.571636+00:00",
+  "snapshot_time": "2026-09-01T04:14:21.999499+00:00",
   "repository": "soyomarvaldezg/papers-feed",
   "objects": {
     "interactions:arxiv.2608.22474": {
@@ -21,6 +21,21 @@
               "idle_seconds": 1,
               "total_elapsed_seconds": 81
             }
+          },
+          {
+            "type": "reading_session",
+            "timestamp": "2026-08-31T22:56:50.595Z",
+            "data": {
+              "session_id": "session_1788217009945_jfl3140",
+              "source_id": "arxiv",
+              "paper_id": "2608.22474",
+              "start_time": "2026-08-31T22:55:53.467Z",
+              "end_time": "2026-08-31T22:56:49.945Z",
+              "heartbeat_count": 11,
+              "duration_seconds": 55,
+              "idle_seconds": 1,
+              "total_elapsed_seconds": 56
+            }
           }
         ]
       },
@@ -28,7 +43,7 @@
         "issue_number": 12,
         "object_id": "interactions:arxiv.2608.22474",
         "created_at": "2026-08-29T22:44:10+00:00",
-        "updated_at": "2026-08-29T22:46:39+00:00",
+        "updated_at": "2026-08-31T22:57:15+00:00",
         "version": 1
       }
     },
@@ -64,13 +79,29 @@
       "data": {
         "sourceId": "arxiv",
         "paperId": "2608.23402",
-        "interactions": []
+        "interactions": [
+          {
+            "type": "reading_session",
+            "timestamp": "2026-08-31T22:55:43.462Z",
+            "data": {
+              "session_id": "session_1788216943418_qxpsnlb",
+              "source_id": "arxiv",
+              "paper_id": "2608.23402",
+              "start_time": "2026-08-31T22:55:22.759Z",
+              "end_time": "2026-08-31T22:55:43.418Z",
+              "heartbeat_count": 4,
+              "duration_seconds": 20,
+              "idle_seconds": 1,
+              "total_elapsed_seconds": 21
+            }
+          }
+        ]
       },
       "meta": {
         "issue_number": 9,
         "object_id": "interactions:arxiv.2608.23402",
         "created_at": "2026-08-29T22:43:55+00:00",
-        "updated_at": "2026-08-29T22:43:57+00:00",
+        "updated_at": "2026-08-31T22:56:02+00:00",
         "version": 1
       }
     },
@@ -303,6 +334,21 @@
               "idle_seconds": 2,
               "total_elapsed_seconds": 102
             }
+          },
+          {
+            "type": "reading_session",
+            "timestamp": "2026-08-30T00:10:01.180Z",
+            "data": {
+              "session_id": "session_1788048601175_sd1re4x",
+              "source_id": "arxiv",
+              "paper_id": "2608.22063",
+              "start_time": "2026-08-30T00:09:48.940Z",
+              "end_time": "2026-08-30T00:10:01.175Z",
+              "heartbeat_count": 2,
+              "duration_seconds": 10,
+              "idle_seconds": 2,
+              "total_elapsed_seconds": 12
+            }
           }
         ]
       },
@@ -310,7 +356,7 @@
         "issue_number": 14,
         "object_id": "interactions:arxiv.2608.22063",
         "created_at": "2026-08-29T22:46:52+00:00",
-        "updated_at": "2026-08-29T22:48:51+00:00",
+        "updated_at": "2026-08-30T00:10:07+00:00",
         "version": 1
       }
     },
@@ -338,6 +384,293 @@
         "object_id": "paper:arxiv.2608.22063",
         "created_at": "2026-08-29T22:46:24+00:00",
         "updated_at": "2026-08-29T22:46:44+00:00",
+        "version": 1
+      }
+    },
+    "interactions:arxiv.2608.28432": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2608.28432",
+        "interactions": [
+          {
+            "type": "reading_session",
+            "timestamp": "2026-08-31T22:55:11.751Z",
+            "data": {
+              "session_id": "session_1788216910791_65m5wqh",
+              "source_id": "arxiv",
+              "paper_id": "2608.28432",
+              "start_time": "2026-08-31T22:53:29.587Z",
+              "end_time": "2026-08-31T22:55:10.791Z",
+              "heartbeat_count": 20,
+              "duration_seconds": 100,
+              "idle_seconds": 1,
+              "total_elapsed_seconds": 101
+            }
+          }
+        ]
+      },
+      "meta": {
+        "issue_number": 24,
+        "object_id": "interactions:arxiv.2608.28432",
+        "created_at": "2026-08-31T22:53:30+00:00",
+        "updated_at": "2026-08-31T22:55:33+00:00",
+        "version": 1
+      }
+    },
+    "interactions:arxiv.2608.28097": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2608.28097",
+        "interactions": [
+          {
+            "type": "reading_session",
+            "timestamp": "2026-08-31T22:53:11.406Z",
+            "data": {
+              "session_id": "session_1788216791361_gq5njgi",
+              "source_id": "arxiv",
+              "paper_id": "2608.28097",
+              "start_time": "2026-08-31T22:53:04.985Z",
+              "end_time": "2026-08-31T22:53:11.361Z",
+              "heartbeat_count": 1,
+              "duration_seconds": 5,
+              "idle_seconds": 1,
+              "total_elapsed_seconds": 6
+            }
+          }
+        ]
+      },
+      "meta": {
+        "issue_number": 23,
+        "object_id": "interactions:arxiv.2608.28097",
+        "created_at": "2026-08-31T22:53:12+00:00",
+        "updated_at": "2026-08-31T22:53:38+00:00",
+        "version": 1
+      }
+    },
+    "interactions:arxiv.2608.28400": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2608.28400",
+        "interactions": []
+      },
+      "meta": {
+        "issue_number": 22,
+        "object_id": "interactions:arxiv.2608.28400",
+        "created_at": "2026-08-31T22:53:05+00:00",
+        "updated_at": "2026-08-31T22:53:07+00:00",
+        "version": 1
+      }
+    },
+    "interactions:arxiv.2608.27927": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2608.27927",
+        "interactions": [
+          {
+            "type": "reading_session",
+            "timestamp": "2026-08-31T22:52:51.127Z",
+            "data": {
+              "session_id": "session_1788216770170_t7zcvuh",
+              "source_id": "arxiv",
+              "paper_id": "2608.27927",
+              "start_time": "2026-08-31T22:50:59.757Z",
+              "end_time": "2026-08-31T22:52:50.170Z",
+              "heartbeat_count": 22,
+              "duration_seconds": 110,
+              "idle_seconds": 0,
+              "total_elapsed_seconds": 110
+            }
+          }
+        ]
+      },
+      "meta": {
+        "issue_number": 21,
+        "object_id": "interactions:arxiv.2608.27927",
+        "created_at": "2026-08-31T22:50:59+00:00",
+        "updated_at": "2026-08-31T22:53:08+00:00",
+        "version": 1
+      }
+    },
+    "interactions:arxiv.2608.28403": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2608.28403",
+        "interactions": [
+          {
+            "type": "reading_session",
+            "timestamp": "2026-08-31T22:49:27.347Z",
+            "data": {
+              "session_id": "session_1788216567013_h9ho0ri",
+              "source_id": "arxiv",
+              "paper_id": "2608.28403",
+              "start_time": "2026-08-31T22:49:03.658Z",
+              "end_time": "2026-08-31T22:49:27.013Z",
+              "heartbeat_count": 4,
+              "duration_seconds": 20,
+              "idle_seconds": 3,
+              "total_elapsed_seconds": 23
+            }
+          },
+          {
+            "type": "reading_session",
+            "timestamp": "2026-08-31T22:50:39.957Z",
+            "data": {
+              "session_id": "session_1788216639011_g9sp4q0",
+              "source_id": "arxiv",
+              "paper_id": "2608.28403",
+              "start_time": "2026-08-31T22:49:28.140Z",
+              "end_time": "2026-08-31T22:50:39.011Z",
+              "heartbeat_count": 14,
+              "duration_seconds": 70,
+              "idle_seconds": 1,
+              "total_elapsed_seconds": 71
+            }
+          }
+        ]
+      },
+      "meta": {
+        "issue_number": 20,
+        "object_id": "interactions:arxiv.2608.28403",
+        "created_at": "2026-08-31T22:49:28+00:00",
+        "updated_at": "2026-08-31T22:50:57+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2608.28400": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2608.28400",
+        "url": "https://arxiv.org/abs/2608.28400",
+        "title": "When Verified Source Becomes Attack Input: Defending Smart Contracts Against LLM-Based Vulnerability Scanning",
+        "authors": "Mingyuan Huang, Zimo Ji, Yifan Mo, Shuai Wang",
+        "abstract": "Smart contracts are financial programs deployed on blockchains to manage digital assets. To build trust with users and investors, smart contract projects typically publish their source code on blockchain explorers and verify it against the deployed bytecode, making the on-chain program accessible through a human-readable implementation. However, LLM agents are changing the threat model of this disclosure mechanism. By leveraging publicly disclosed source code, recent agent workflows make it increasingly practical to scan contract vulnerabilities for exploits at large scale.\nIn this paper, we propose DeLLMGuard, a smart contract deployment framework that defends against malicious LLM-based vulnerability scanning while preserving public source disclosure and authorized auditing. DeLLMGuard can separate disclosed source code from runtime execution through multiple contract addresses in a real-world blockchain environment. LLM agents must therefore recover additional proxy, delegate, and factory relations before vulnerability analysis. A built-in Verification Layer checks deployment relations, runtime bytecode, source code, and state changes to ensure that the transformation preserves the original business implementation. We evaluate DeLLMGuard on 387 real-world vulnerable contracts with three LLM agents in an environment derived from SCONE-bench. DeLLMGuard reduces overall root-cause correctness from 23.5% to 6.6% and outperforms the closed-source bytecode baseline on the primary non-proxy set. Trace and ablation analyses further show that agents often recover downstream contracts but still fail to identify the vulnerability, indicating that cross-contract recovery remains a major challenge for automated LLM scanning.",
+        "timestamp": "2026-08-31T17:14:03.526Z",
+        "rating": "novote",
+        "publishedDate": "2026/08/28",
+        "tags": [
+          "Cryptography and Security (cs.CR)",
+          "Software Engineering (cs.SE)"
+        ],
+        "doi": "",
+        "journalName": "",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 19,
+        "object_id": "paper:arxiv.2608.28400",
+        "created_at": "2026-08-31T17:14:03+00:00",
+        "updated_at": "2026-08-31T17:14:21+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2608.27927": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2608.27927",
+        "url": "https://arxiv.org/abs/2608.27927",
+        "title": "Antipatterns in AI-assisted Qualitative Data Analysis: A Catalog of Temptations and Pitfalls for Software Engineering Researchers",
+        "authors": "Rashina Hoda, Carolyn Seaman, Victoria Gomes, Rodrigo Spinola",
+        "abstract": "AI-assisted qualitative data analysis (QDA) offers unprecedented opportunities to streamline software engineering (SE) research, yet uncritical use risks compromising analytical rigor and flooding the field with accelerated production of low-quality research. While tactical best practices will naturally evolve over time, SE researchers currently lack strategic guidance to identify and mitigate methodological risks when attempting AI-assisted QDA. Based on our decades of qualitative SE research expertise and experience combined with an understanding of the emerging landscape of AI-assisted QDA, this paper presents a catalog of antipatterns in AI-assisted QDA - a set of assumptions and practices that initially appear advantageous but ultimately undermine analytical rigor and validity. The antipatterns are grouped into three categories reflecting escalating impact: Dangerous Drivers, Operational Missteps, and Analytical Failures. As more SE researchers attempt AI-assisted QDA, these antipatterns will help them identify and avoid common temptations and pitfalls, while reviewers can be equipped with the vocabulary and criteria to call out problematic and failed practice. Ultimately, this catalog of antipatterns can serve as a stepping stone in our responsible methodological evolution toward principled and meaningful human-AI collaboration in qualitative research.",
+        "timestamp": "2026-08-31T17:13:52.431Z",
+        "rating": "novote",
+        "publishedDate": "2026/08/28",
+        "tags": [
+          "Software Engineering (cs.SE)",
+          "Artificial Intelligence (cs.AI)"
+        ],
+        "doi": "",
+        "journalName": "",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 18,
+        "object_id": "paper:arxiv.2608.27927",
+        "created_at": "2026-08-31T17:13:52+00:00",
+        "updated_at": "2026-08-31T17:14:18+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2608.28403": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2608.28403",
+        "url": "https://arxiv.org/abs/2608.28403",
+        "title": "Recovering Software Architecture Intent from Historical Work Items using Generative AI: A Mixed-Methods Industry Case Study",
+        "authors": "Dominik Storck, Tobias Eisenreich, Stefan Wagner",
+        "abstract": "Software architecture is often only partially captured in code, while much of the design intent lives in evolving project artifacts. In agile projects, work items, user stories, and related tracking documents preserve valuable traces of that intent, but they rarely support direct architectural analysis. This work investigates the recovery of C4 architecture diagrams from historical agile work items using an LLM-based pipeline. The semi-automatic five-step workflow employs a prompt chain, bidirectional traceability, and Chain-of-Thought reasoning to transform unstructured Azure DevOps work items into visual artifacts. Evaluated on two industry projects, we use a mixed-methods design combining qualitative expert interviews with a quantitative stability analysis. Practitioners perceive the generated architectural baselines as accurate and highly useful for system comprehension. Strictly bound by their input data, the artifacts mirror the documented intent, thereby surfacing discrepancies and architectural drift when compared to the implemented reality. Quantitatively, the workflow exhibits high stability for architectural entities but lower stability for their relationships, with relative variance compounding across generation steps. The proposed workflow demonstrates the practical viability of LLM-assisted architectural recovery based on development process artifacts.",
+        "timestamp": "2026-08-31T17:13:39.441Z",
+        "rating": "novote",
+        "publishedDate": "2026/08/28",
+        "tags": [
+          "Software Engineering (cs.SE)"
+        ],
+        "doi": "10.1145/3843775.3844549",
+        "journalName": "",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 17,
+        "object_id": "paper:arxiv.2608.28403",
+        "created_at": "2026-08-31T17:13:40+00:00",
+        "updated_at": "2026-08-31T17:13:59+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2608.28097": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2608.28097",
+        "url": "https://arxiv.org/abs/2608.28097",
+        "title": "Great Expectations: Benchmarking the Real-World Performance of RVV 1.0 in HPC",
+        "authors": "Stepan Nassyr, Prateek Chawla, Daniel Seibel, Jayesh Badwaik, Kaveh Haghighi Mood, Andreas Herten",
+        "abstract": "Following the ratification of the RISC-V Vector Extension (RVV 1.0), new commercially available silicon has been adopting the extension. This paper revisits the question of RISC-V viability for High-Performance-Computing (HPC) by benchmarking the latest RVV 1.0-capable hardware (SiFive X280 (Tenstorrent Blackhole), SpacemiT X60 (K1) and X100/A100 (K3), and T-Head C920v2 (Sophon SG2044)). We assess these platforms using standard HPC benchmarks (BLAS, FFTW, HPL, HPCG) and synthetic workloads (STREAM, FMA throughput) and compare them to a state-of-the-art HPC ARM64 chip (NVIDIA Grace). Our findings show that while RVV 1.0 delivers significant performance improvements over scalar execution, hardware-specific implementation challenges remain. We detail these performance characteristics and discuss the remaining hurdles for RISC-V, including RVV, to become a mainstay in the HPC landscape.",
+        "timestamp": "2026-08-31T17:12:48.129Z",
+        "rating": "novote",
+        "publishedDate": "2026/08/28",
+        "tags": [
+          "Distributed",
+          "Parallel",
+          "and Cluster Computing (cs.DC)",
+          "Hardware Architecture (cs.AR)",
+          "Emerging Technologies (cs.ET)"
+        ],
+        "doi": "",
+        "journalName": "",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 16,
+        "object_id": "paper:arxiv.2608.28097",
+        "created_at": "2026-08-31T17:12:48+00:00",
+        "updated_at": "2026-08-31T17:13:15+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2608.28432": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2608.28432",
+        "url": "https://arxiv.org/abs/2608.28432",
+        "title": "Are These Modules Worth Their Cost? A Paradigm-Level Accuracy-Cost Analysis of In-context Learning Text-to-SQL",
+        "authors": "Jiayan Lin, Yujia Liu, Zijin Hong, Zheng Yuan, Yilin Xiao, Hao Chen, Qinggang Zhang, Xiao Huang, Feiran Huang",
+        "abstract": "Recent advances in in-context learning (ICL) text-to-SQL have substantially improved execution accuracy on public benchmarks by assembling increasingly elaborate pipelines around the base generator, yet existing studies typically report aggregate end-to-end accuracy, without quantifying the marginal accuracy-cost contribution of individual design choices. Consequently, providing a unified, paradigm-level cost-accuracy quantification remains a critical challenge for understanding and configuring modern text-to-SQL. To address this, we instantiate 17 paradigm-level configurations across five recurring modules of the ICL text-to-SQL pipeline under a single controlled implementation, and attribute each paradigm's marginal contribution and incurred cost across all four backbones spanning diverse capability levels and reasoning styles. Our analysis reveals that execution-feedback refinement is the only paradigm whose benefit holds universally at consistently low cost, while most other modules help only under backbone-dependent conditions. Token accounting shows that input demand is more closely tied to pipeline structure, whereas output demand is more sensitive to backbone generation behavior. Cross-module analysis further shows that stacking improves accuracy on most backbones, although how the gains compose varies with backbone capability. We also find that a fixed budget is often better spent engineering a more elaborate pipeline over a mid-tier backbone than upgrading to a frontier model with a lean pipeline. These findings distill into an actionable, cost-aware tiered guideline that transfers to five additional backbones without per-paradigm search.",
+        "timestamp": "2026-08-31T17:11:46.565Z",
+        "rating": "novote",
+        "publishedDate": "2026/08/28",
+        "tags": [
+          "Computation and Language (cs.CL)",
+          "Artificial Intelligence (cs.AI)",
+          "Databases (cs.DB)"
+        ],
+        "doi": "",
+        "journalName": "",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 15,
+        "object_id": "paper:arxiv.2608.28432",
+        "created_at": "2026-08-31T17:11:47+00:00",
+        "updated_at": "2026-08-31T17:12:08+00:00",
         "version": 1
       }
     }
