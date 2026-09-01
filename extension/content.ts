@@ -237,6 +237,63 @@ document.addEventListener('click', (e) => {
   }
 });
 
+// Build popup content from structured paper metadata (no HTML strings, so
+// paper data can never inject markup into the page)
+function buildPopupContent(paper: PaperMetadata): DocumentFragment {
+  const fragment = document.createDocumentFragment();
+
+  // Header
+  const header = document.createElement('div');
+  header.className = 'paper-popup-header';
+  header.textContent = paper.title || paper.paperId;
+  fragment.appendChild(header);
+
+  // Authors / meta line
+  const meta = document.createElement('div');
+  meta.className = 'paper-popup-meta';
+  meta.textContent = paper.authors || '';
+  fragment.appendChild(meta);
+
+  // Rating buttons
+  const buttons = document.createElement('div');
+  buttons.className = 'paper-popup-buttons';
+
+  const thumbsUp = document.createElement('button');
+  thumbsUp.className = paper.rating === 'thumbsup' ? 'vote-button active' : 'vote-button';
+  thumbsUp.id = 'btn-thumbsup';
+  thumbsUp.dataset.vote = 'thumbsup';
+  thumbsUp.textContent = '👍 Interesting';
+
+  const thumbsDown = document.createElement('button');
+  thumbsDown.className = paper.rating === 'thumbsdown' ? 'vote-button active' : 'vote-button';
+  thumbsDown.id = 'btn-thumbsdown';
+  thumbsDown.dataset.vote = 'thumbsdown';
+  thumbsDown.textContent = '👎 Not Relevant';
+
+  buttons.appendChild(thumbsUp);
+  buttons.appendChild(thumbsDown);
+  fragment.appendChild(buttons);
+
+  // Notes area
+  const notes = document.createElement('textarea');
+  notes.id = 'paper-notes';
+  notes.placeholder = 'Add notes about this paper...';
+  fragment.appendChild(notes);
+
+  // Actions row
+  const actions = document.createElement('div');
+  actions.className = 'paper-popup-actions';
+
+  const saveButton = document.createElement('button');
+  saveButton.className = 'save-button';
+  saveButton.id = 'btn-save';
+  saveButton.textContent = 'Save';
+  actions.appendChild(saveButton);
+  fragment.appendChild(actions);
+
+  return fragment;
+}
+
 // Start session tracking
 function startSessionTracking(sourceId: string, paperId: string) {
   // Stop any existing heartbeat
@@ -478,7 +535,7 @@ chrome.runtime.onMessage.addListener((message: any, sender, sendResponse) => {
     // Create popup
     const popup = document.createElement('div');
     popup.className = 'paper-popup';
-    popup.innerHTML = message.html;
+    popup.appendChild(buildPopupContent(message.paper));
     
     // Add to page
     wrapper.appendChild(popup);

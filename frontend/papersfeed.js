@@ -56,6 +56,17 @@ function daysBetween(startDate, endDate) {
   return diffDays;
 }
 
+// Escape HTML special characters before interpolating store data into markup
+function escapeHtml(value) {
+  if (value === null || value === undefined) return '';
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 // Filter Manager for unified filter state
 class FilterManager {
   constructor(table) {
@@ -489,7 +500,7 @@ function formatTags(cell) {
     return '';
   }
   return tags.map(tag => 
-    `<span class="tag">${tag}</span>`
+    `<span class="tag">${escapeHtml(tag)}</span>`
   ).join(' ');
 }
 
@@ -549,9 +560,9 @@ function formatInteractions(interactions) {
           const date = new Date(interaction.timestamp);
           return `
             <tr>
-              <td>${date.toLocaleString()}</td>
-              <td>${interaction.data.duration_seconds} seconds</td>
-              <td>${interaction.data.session_id}</td>
+              <td>${escapeHtml(date.toLocaleString())}</td>
+              <td>${escapeHtml(interaction.data.duration_seconds)} seconds</td>
+              <td>${escapeHtml(interaction.data.session_id)}</td>
             </tr>
           `;
         }).join('')}
@@ -578,10 +589,16 @@ function displayPaperDetails(paperId) {
   const detailsSidebar = document.getElementById('details-sidebar');
   const detailsContent = document.getElementById('details-content');
   
+  // Only emit http(s) URLs into an href; render anything else as plain text
+  const safeUrl = typeof paper.url === 'string' && 
+    (paper.url.startsWith('http://') || paper.url.startsWith('https://')) 
+    ? paper.url 
+    : null;
+  
   // Content no longer includes close button - it's now fixed in HTML
   detailsContent.innerHTML = `
     <div class="details-header">
-      <h2>${paper.title}</h2>
+      <h2>${escapeHtml(paper.title)}</h2>
     </div>
     
     <div class="detail-section">
@@ -589,27 +606,27 @@ function displayPaperDetails(paperId) {
       <table class="detail-table">
         <tr>
           <th>ID:</th>
-          <td>${paper.id}</td>
+          <td>${escapeHtml(paper.id)}</td>
         </tr>
         <tr>
           <th>Authors:</th>
-          <td>${paper.authors}</td>
+          <td>${escapeHtml(paper.authors)}</td>
         </tr>
         <tr>
           <th>Publication Date:</th>
-          <td>${paper.published}</td>
+          <td>${escapeHtml(paper.published)}</td>
         </tr>
         <tr>
           <th>Last Read:</th>
-          <td>${paper.lastRead}</td>
+          <td>${escapeHtml(paper.lastRead)}</td>
         </tr>
         <tr>
           <th>Reading Time:</th>
-          <td>${paper.readingTime}</td>
+          <td>${escapeHtml(paper.readingTime)}</td>
         </tr>
         <tr>
           <th>Interaction Days:</th>
-          <td>${paper.interactionDays === 1 ? '1 day' : paper.interactionDays + ' days'}</td>
+          <td>${escapeHtml(paper.interactionDays === 1 ? '1 day' : paper.interactionDays + ' days')}</td>
         </tr>
         <tr>
           <th>arXiv Tags:</th>
@@ -617,7 +634,7 @@ function displayPaperDetails(paperId) {
         </tr>
         <tr>
           <th>URL:</th>
-          <td><a href="${paper.url}" target="_blank">${paper.url}</a></td>
+          <td>${safeUrl ? `<a href="${escapeHtml(safeUrl)}" target="_blank">${escapeHtml(paper.url)}</a>` : escapeHtml(paper.url || '')}</td>
         </tr>
       </table>
     </div>
@@ -625,7 +642,7 @@ function displayPaperDetails(paperId) {
     <div class="detail-section">
       <h3>Abstract</h3>
       <div class="abstract-box">
-        ${paper.abstract}
+        ${escapeHtml(paper.abstract)}
       </div>
     </div>
     
@@ -880,10 +897,7 @@ function initTable(data) {
         title: "Title", 
         field: "title", 
         widthGrow: 6,
-        formatter: function(cell) {
-          const value = cell.getValue();
-          return value;
-        }
+        formatter: "plaintext"
       },
       {
         title: "Source", 
@@ -1103,6 +1117,9 @@ function setupEventListeners() {
     document.getElementById("details-sidebar").classList.remove("active");
   });
   
+  // Close button on paper details sidebar
+  document.getElementById("close-details").addEventListener("click", hideDetails);
+  
   // Floating filter button
   document.getElementById("filter-toggle-btn").addEventListener("click", function() {
     document.getElementById("sidebar").classList.toggle("active");
@@ -1232,7 +1249,7 @@ document.addEventListener("DOMContentLoaded", function() {
       setupEventListeners();
     })
     .catch(error => {
-      document.querySelector(".loading").innerHTML = 
+      document.querySelector(".loading").textContent = 
         `Error loading data: ${error.message}. Make sure data.json exists in the same directory as this HTML file.`;
     });
 });

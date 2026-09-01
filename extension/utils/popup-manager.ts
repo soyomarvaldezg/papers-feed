@@ -18,13 +18,13 @@ interface PopupHandler {
 }
 
 /**
- * Popup message type
+ * Popup message type (carries structured paper data, never HTML)
  */
 interface ShowPopupMessage {
   type: 'showPopup';
   sourceId: string;
   paperId: string;
-  html: string;
+  paper: PaperMetadata;
   handlers: PopupHandler[];
   position?: { x: number, y: number };
 }
@@ -124,11 +124,8 @@ export class PopupManager {
     }
     
     try {
-      // Get paper data
-      const paper = await paperManager.getPaper(sourceId, paperId);
-      
-      // Create popup HTML
-      const html = this.createPopupHtml(paper || { 
+      // Get paper data (fall back to a stub if not yet stored)
+      const paper = await paperManager.getPaper(sourceId, paperId) || { 
         sourceId, 
         paperId,
         title: paperId,
@@ -139,17 +136,17 @@ export class PopupManager {
         publishedDate: '',
         tags: [],
         rating: 'novote'
-      });
+      };
       
       // Get handlers
       const handlers = this.getStandardPopupHandlers();
       
-      // Send message to content script to show popup
+      // Send structured paper data to content script to show popup
       const message: ShowPopupMessage = {
         type: 'showPopup',
         sourceId,
         paperId,
-        html,
+        paper,
         handlers,
         position
       };
@@ -195,27 +192,6 @@ export class PopupManager {
       logger.error(`Error handling action ${action} for ${sourceId}:${paperId}`, error);
       throw error;
     }
-  }
-  
-  /**
-   * Create HTML for paper popup
-   */
-  private createPopupHtml(paper: PaperMetadata): string {
-    return `
-      <div class="paper-popup-header">${paper.title || paper.paperId}</div>
-      <div class="paper-popup-meta">${paper.authors || ''}</div>
-      
-      <div class="paper-popup-buttons">
-        <button class="vote-button" data-vote="thumbsup" id="btn-thumbsup" ${paper.rating === 'thumbsup' ? 'class="active"' : ''}>👍 Interesting</button>
-        <button class="vote-button" data-vote="thumbsdown" id="btn-thumbsdown" ${paper.rating === 'thumbsdown' ? 'class="active"' : ''}>👎 Not Relevant</button>
-      </div>
-      
-      <textarea placeholder="Add notes about this paper..." id="paper-notes"></textarea>
-      
-      <div class="paper-popup-actions">
-        <button class="save-button" id="btn-save">Save</button>
-      </div>
-    `;
   }
   
   /**

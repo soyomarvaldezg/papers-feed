@@ -118,12 +118,12 @@ export interface PopupActionMessage {
   data: any;
 }
 
-// Show popup message
+// Show popup message (carries structured paper data, never HTML)
 export interface ShowPopupMessage {
   type: 'showPopup';
   sourceId: string;
   paperId: string;
-  html: string;
+  paper: PaperMetadata;
   handlers: Array<{
     selector: string;
     event: string;

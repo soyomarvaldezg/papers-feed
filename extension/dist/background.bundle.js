@@ -522,10 +522,8 @@ class PopupManager {
             throw new Error('Paper manager not initialized');
         }
         try {
-            // Get paper data
-            const paper = await paperManager.getPaper(sourceId, paperId);
-            // Create popup HTML
-            const html = this.createPopupHtml(paper || {
+            // Get paper data (fall back to a stub if not yet stored)
+            const paper = await paperManager.getPaper(sourceId, paperId) || {
                 sourceId,
                 paperId,
                 title: paperId,
@@ -536,15 +534,15 @@ class PopupManager {
                 publishedDate: '',
                 tags: [],
                 rating: 'novote'
-            });
+            };
             // Get handlers
             const handlers = this.getStandardPopupHandlers();
-            // Send message to content script to show popup
+            // Send structured paper data to content script to show popup
             const message = {
                 type: 'showPopup',
                 sourceId,
                 paperId,
-                html,
+                paper,
                 handlers,
                 position
             };
@@ -581,26 +579,6 @@ class PopupManager {
             logger$6.error(`Error handling action ${action} for ${sourceId}:${paperId}`, error);
             throw error;
         }
-    }
-    /**
-     * Create HTML for paper popup
-     */
-    createPopupHtml(paper) {
-        return `
-      <div class="paper-popup-header">${paper.title || paper.paperId}</div>
-      <div class="paper-popup-meta">${paper.authors || ''}</div>
-      
-      <div class="paper-popup-buttons">
-        <button class="vote-button" data-vote="thumbsup" id="btn-thumbsup" ${paper.rating === 'thumbsup' ? 'class="active"' : ''}>👍 Interesting</button>
-        <button class="vote-button" data-vote="thumbsdown" id="btn-thumbsdown" ${paper.rating === 'thumbsdown' ? 'class="active"' : ''}>👎 Not Relevant</button>
-      </div>
-      
-      <textarea placeholder="Add notes about this paper..." id="paper-notes"></textarea>
-      
-      <div class="paper-popup-actions">
-        <button class="save-button" id="btn-save">Save</button>
-      </div>
-    `;
     }
     /**
      * Get standard popup event handlers
@@ -765,7 +743,7 @@ class MetadataExtractor {
         // Title extraction - priority order
         return (
         // Dublin Core
-        this.getMetaContent('meta[name="DC.Title"]') ||
+        this.getMetaContent('meta[name="DC.Title"]') || this.getMetaContent('meta[name="dc.title"]') ||
             // Citation
             this.getMetaContent('meta[name="citation_title"]') ||
             // Open Graph
@@ -795,7 +773,7 @@ class MetadataExtractor {
                 dcCreators.push(content);
         });
         // Individual author elements
-        const dcCreator = this.getMetaContent('meta[name="DC.Creator.PersonalName"]');
+        const dcCreator = this.getMetaContent('meta[name="DC.Creator.PersonalName"]') || this.getMetaContent('meta[name="dc.creator.personalname"]');
         const citationAuthor = this.getMetaContent('meta[name="citation_author"]');
         const ogAuthor = this.getMetaContent('meta[property="og:article:author"]') ||
             this.getMetaContent('meta[name="author"]');
@@ -821,7 +799,7 @@ class MetadataExtractor {
      * Extract description/abstract from document
      */
     extractDescription() {
-        return (this.getMetaContent('meta[name="DC.Description"]') ||
+        return (this.getMetaContent('meta[name="DC.Description"]') || this.getMetaContent('meta[name="dc.description"]') ||
             this.getMetaContent('meta[name="citation_abstract"]') ||
             this.getMetaContent('meta[property="og:description"]') ||
             this.getMetaContent('meta[name="description"]'));
@@ -830,7 +808,7 @@ class MetadataExtractor {
      * Extract publication date from document
      */
     extractPublishedDate() {
-        return (this.getMetaContent('meta[name="DC.Date.issued"]') ||
+        return (this.getMetaContent('meta[name="DC.Date.issued"]') || this.getMetaContent('meta[name="dc.date.issued"]') || this.getMetaContent('meta[name="dc.date"]') || this.getMetaContent('meta[name="dc.Date"]') || this.getMetaContent('meta[name="DC.Date"]') ||
             this.getMetaContent('meta[name="citation_date"]') ||
             this.getMetaContent('meta[property="article:published_time"]'));
     }
@@ -838,14 +816,14 @@ class MetadataExtractor {
      * Extract DOI (Digital Object Identifier) from document
      */
     extractDoi() {
-        return (this.getMetaContent('meta[name="DC.Identifier.DOI"]') ||
+        return (this.getMetaContent('meta[name="DC.Identifier.DOI"]') || this.getMetaContent('meta[name="dc.identifier.doi"]') ||
             this.getMetaContent('meta[name="citation_doi"]'));
     }
     /**
      * Extract journal name from document
      */
     extractJournalName() {
-        return (this.getMetaContent('meta[name="DC.Source"]') ||
+        return (this.getMetaContent('meta[name="DC.Source"]') || this.getMetaContent('meta[name="dc.source"]') ||
             this.getMetaContent('meta[name="citation_journal_title"]'));
     }
     /**
@@ -853,7 +831,7 @@ class MetadataExtractor {
      */
     extractTags() {
         const keywords = this.getMetaContent('meta[name="keywords"]') ||
-            this.getMetaContent('meta[name="DC.Subject"]');
+            this.getMetaContent('meta[name="DC.Subject"]') || this.getMetaContent('meta[name="dc.subject"]');
         if (keywords) {
             return keywords.split(',').map(tag => tag.trim());
         }
@@ -1034,9 +1012,6 @@ class ArxivMetadataExtractor extends MetadataExtractor {
         if (this.apiMetadata?.title) {
             return this.apiMetadata.title;
         }
-        // arXiv-specific selectors
-        //const arxivTitle = this.document.querySelector('.title.mathjax')?.textContent?.trim();
-        //return arxivTitle || super.extractTitle();
         return super.extractTitle();
     }
     /**
@@ -1130,9 +1105,9 @@ class ArXivIntegration extends BaseSourceIntegration {
             /arxiv\.org\/\w+\/([0-9.]+)/
         ];
         // Content script matches
-        this.contentScriptMatches = [
-            "*://*.arxiv.org/*"
-        ];
+        // readonly contentScriptMatches = [
+        //   "*://*.arxiv.org/*"
+        // ];
         // ArXiv API endpoint
         this.API_BASE_URL = 'https://export.arxiv.org/api/query';
     }
@@ -1358,10 +1333,6 @@ class OpenReviewIntegration extends BaseSourceIntegration {
             /openreview\.net\/forum\?id=([a-zA-Z0-9]+)/,
             /openreview\.net\/pdf\?id=([a-zA-Z0-9]+)/
         ];
-        // Content script matches
-        this.contentScriptMatches = [
-            "*://*.openreview.net/*"
-        ];
     }
     /**
      * Extract paper ID from URL
@@ -1403,16 +1374,183 @@ class OpenReviewIntegration extends BaseSourceIntegration {
 // Export a singleton instance that can be used by both background and content scripts
 const openReviewIntegration = new OpenReviewIntegration();
 
-// extension/source-integration/registry.ts
-// Import any other integrations here
+// extension/source-integration/nature/index.ts
+loguru.getLogger('nature-integration');
 /**
- * Registry of all available source integrations
- * This is the SINGLE place where integrations need to be added
+ * Custom metadata extractor for Nature.com pages
  */
+class NatureMetadataExtractor extends MetadataExtractor {
+    /**
+     * Override title extraction to use meta tag first
+     */
+    extractTitle() {
+        const metaTitle = this.getMetaContent('meta[name="citation_title"]') ||
+            this.getMetaContent('meta[property="og:title"]');
+        return metaTitle || super.extractTitle();
+    }
+    /**
+     * Override authors extraction to use meta tag first
+     */
+    extractAuthors() {
+        const metaAuthors = this.getMetaContent('meta[name="citation_author"]');
+        if (metaAuthors) {
+            return metaAuthors;
+        }
+        // Fallback to HTML extraction
+        const authorElements = this.document.querySelectorAll('.c-article-author-list__item');
+        if (authorElements.length > 0) {
+            return Array.from(authorElements)
+                .map(el => el.textContent?.trim())
+                .filter(Boolean)
+                .join(', ');
+        }
+        return super.extractAuthors();
+    }
+    /**
+     * Extract keywords/tags from document
+     */
+    extractTags() {
+        const keywords = this.getMetaContent('meta[name="dc.subject"]');
+        if (keywords) {
+            return keywords.split(',').map(tag => tag.trim());
+        }
+        return [];
+    }
+    /**
+     * Override description extraction to use meta tag first
+     */
+    extractDescription() {
+        const metaDescription = this.getMetaContent('meta[name="description"]') ||
+            this.getMetaContent('meta[property="og:description"]');
+        return metaDescription || super.extractDescription();
+    }
+    /**
+     * Override published date extraction to use meta tag
+     */
+    extractPublishedDate() {
+        return this.getMetaContent('meta[name="citation_publication_date"]') || super.extractPublishedDate();
+    }
+    /**
+     * Override DOI extraction to use meta tag
+     */
+    extractDoi() {
+        return this.getMetaContent('meta[name="citation_doi"]') || super.extractDoi();
+    }
+}
+/**
+ * Nature.com integration with custom metadata extraction
+ */
+class NatureIntegration extends BaseSourceIntegration {
+    constructor() {
+        super(...arguments);
+        this.id = 'nature';
+        this.name = 'Nature';
+        // URL pattern for Nature articles with capture group for ID
+        this.urlPatterns = [
+            /nature\.com\/articles\/([^?]+)/,
+        ];
+    }
+    /**
+     * Extract paper ID from URL
+     */
+    extractPaperId(url) {
+        const match = url.match(this.urlPatterns[0]);
+        return match ? match[1] : null;
+    }
+    /**
+     * Create a custom metadata extractor for Nature.com
+     */
+    createMetadataExtractor(document) {
+        return new NatureMetadataExtractor(document);
+    }
+}
+// Export a singleton instance 
+const natureIntegration = new NatureIntegration();
+
+// extension/source-integration/pnas/index.ts
+class PnasIntegration extends BaseSourceIntegration {
+    constructor() {
+        super(...arguments);
+        this.id = 'pnas';
+        this.name = 'PNAS';
+        this.urlPatterns = [
+            /pnas\.org\/doi\/10\.1073\/pnas\.([0-9]+)/
+        ];
+    }
+    // upstream BaseSourceIntegration.extractPaperId should default to this behavior when able
+    extractPaperId(url) {
+        const match = url.match(this.urlPatterns[0]);
+        return match ? match[1] : null;
+    }
+}
+const pnasIntegration = new PnasIntegration();
+
+// extension/source-integration/misc/index.ts
+class MiscIntegration extends BaseSourceIntegration {
+    constructor() {
+        super(...arguments);
+        this.id = 'url-misc';
+        this.name = 'misc tracked url';
+        this.urlPatterns = []; // set this empty to disable attaching the content injection icon thing
+        // add URLs here to track
+        this.contentScriptMatches = [
+            "sciencedirect.com/science/article/",
+            "philpapers.org/rec/",
+            "proceedings.neurips.cc/paper_files/paper/",
+            "journals.sagepub.com/doi/",
+            "link.springer.com/article/",
+            ".science.org/doi/",
+            "journals.aps.org/prx/abstract/",
+            "onlinelibrary.wiley.com/doi/",
+            "cell.com/trends/cognitive-sciences/fulltext/",
+            "researchgate.net/publication/",
+            "psycnet.apa.org/record/",
+            "biorxiv.org/content/",
+            "osf.io/preprints/",
+            "frontiersin.org/journals/",
+            "jstor.org/",
+            "proceedings.mlr.press/",
+            "journals.plos.org/plosone/article",
+            "ieeexplore.ieee.org/document/",
+            "royalsocietypublishing.org/doi/",
+            "papers.nips.cc/paper_files/paper/",
+            "philarchive.org/archive/",
+            "tandfonline.com/doi/",
+            "iopscience.iop.org/article/",
+            "academic.oup.com/brain/article/",
+            "elifesciences.org/articles/",
+            "escholarship.org/content/",
+            "pmc.ncbi.nlm.nih.gov/articles/",
+            "pubmed.ncbi.nlm.nih.gov/",
+            "openaccess.thecvf.com/content/",
+            "zenodo.org/records/",
+            "journals.asm.org/doi/full/",
+            "physoc.onlinelibrary.wiley.com/doi/full/",
+            "storage.courtlistener.com/recap/",
+            "bmj.com/content/",
+            "ntsb.gov/investigations/pages",
+            "ntsb.gov/investigations/AccidentReports",
+            "aclanthology.org/",
+            "journals.ametsoc.org/view/journals/",
+            "substack.com/p/",
+            "citeseerx.",
+            "/doi/",
+            "/pdf/",
+        ];
+    }
+    canHandleUrl(url) {
+        return this.contentScriptMatches.some(pattern => url.includes(pattern));
+    }
+}
+const miscIntegration = new MiscIntegration();
+
+// extension/source-integration/registry.ts
 const sourceIntegrations = [
     arxivIntegration,
     openReviewIntegration,
-    // Add new integrations here
+    natureIntegration,
+    pnasIntegration,
+    miscIntegration,
 ];
 
 // background.ts
