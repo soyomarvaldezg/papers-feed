@@ -22,17 +22,49 @@ export class BaseSourceIntegration implements SourceIntegration {
   // Default properties - set for generic web pages
   readonly id: string = 'url';
   readonly name: string = 'Web Page';
-  readonly urlPatterns: RegExp[] = [
-    /^https?:\/\/(?!.*\.pdf($|\?|#)).*$/i  // Match HTTP/HTTPS URLs that aren't PDFs
-  ];
+  // Hostnames this integration accepts (exact match or subdomain).
+  // Must be declared per source; an empty list means no URLs are accepted.
+  readonly allowedHosts: string[] = [];
+  // Path patterns for paper URLs, anchored to the parsed URL's pathname
+  readonly urlPatterns: RegExp[] = [];
   readonly contentScriptMatches: string[] = [];
 
   /**
+   * Parse a URL and reject anything that is not a well-formed http(s) URL
+   * Shared entry point for URL validation across source integrations
+   */
+  protected parseHttpUrl(url: string): URL | null {
+    try {
+      const parsed = new URL(url);
+      if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+        return null;
+      }
+      return parsed;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Check a lowercase hostname against the allowlist (subdomains included)
+   */
+  protected isAllowedHost(hostname: string): boolean {
+    return this.allowedHosts.some(allowed =>
+      hostname === allowed || hostname.endsWith(`.${allowed}`)
+    );
+  }
+
+  /**
    * Check if this integration can handle the given URL
-   * Default implementation checks against urlPatterns
+   * Only well-formed http(s) URLs on explicitly allowed hosts match
    */
   canHandleUrl(url: string): boolean {
-    return this.urlPatterns.some(pattern => pattern.test(url));
+    const parsed = this.parseHttpUrl(url);
+    if (!parsed) {
+      return false;
+    }
+    return this.isAllowedHost(parsed.hostname.toLowerCase()) &&
+      this.urlPatterns.some(pattern => pattern.test(parsed.pathname));
   }
 
   /**

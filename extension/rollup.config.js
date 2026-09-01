@@ -4,6 +4,17 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import { terser } from 'rollup-plugin-terser';
 
+// Replaces the __DEV_BUILD__ flag consumed by the background script so debug
+// helpers stay available in development and are dead-code eliminated in
+// production builds (NODE_ENV=production npm run build)
+const devFlag = () => ({
+  name: 'dev-flag',
+  transform(code) {
+    const isDev = process.env.NODE_ENV !== 'production';
+    return code.replace(/__DEV_BUILD__/g, String(isDev));
+  }
+});
+
 export default [
   // Background script as ESM (module)
   {
@@ -14,6 +25,7 @@ export default [
       sourcemap: true
     },
     plugins: [
+      devFlag(),
       typescript(),
       resolve(),
       commonjs()

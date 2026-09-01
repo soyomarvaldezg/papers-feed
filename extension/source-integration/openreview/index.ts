@@ -96,23 +96,29 @@ export class OpenReviewIntegration extends BaseSourceIntegration {
   readonly id = 'openreview';
   readonly name = 'OpenReview';
   
-  // URL patterns for papers
+  // Host allowlist: only well-formed http(s) URLs on openreview.net match
+  readonly allowedHosts = ['openreview.net'];
+
+  // Path patterns for papers, anchored to the parsed URL's pathname; the
+  // paper id travels in the query string (forum?id=...)
   readonly urlPatterns = [
-    /openreview\.net\/forum\?id=([a-zA-Z0-9]+)/,
-    /openreview\.net\/pdf\?id=([a-zA-Z0-9]+)/
+    /^\/forum$/,
+    /^\/pdf$/
   ];
 
   /**
    * Extract paper ID from URL
    */
   extractPaperId(url: string): string | null {
-    for (const pattern of this.urlPatterns) {
-      const match = url.match(pattern);
-      if (match) {
-        return match[1]; // The capture group with the paper ID
-      }
+    const parsed = this.parseHttpUrl(url);
+    if (!parsed || !this.isAllowedHost(parsed.hostname.toLowerCase())) {
+      return null;
     }
-    return null;
+    if (!this.urlPatterns.some(pattern => pattern.test(parsed.pathname))) {
+      return null;
+    }
+    const id = parsed.searchParams.get('id');
+    return id && /^[a-zA-Z0-9]+$/.test(id) ? id : null;
   }
 
   /**

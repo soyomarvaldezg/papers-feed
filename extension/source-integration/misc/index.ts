@@ -58,8 +58,67 @@ export class MiscIntegration extends BaseSourceIntegration {
 
   ];
 
+  // Host allowlist derived from the substring patterns above. Each entry
+  // pins the pattern to an explicit host (subdomains included) and, where
+  // the original pattern had a meaningful path, an anchored path prefix.
+  // The bare "/doi/" and "/pdf/" substrings were dropped: they matched any
+  // host and could be spoofed via query strings; every publisher they
+  // covered is listed explicitly here.
+  private readonly trackedHosts: Array<{ host: string; pathPrefix?: string }> = [
+    { host: 'sciencedirect.com', pathPrefix: '/science/article/' },
+    { host: 'philpapers.org', pathPrefix: '/rec/' },
+    { host: 'proceedings.neurips.cc', pathPrefix: '/paper_files/paper/' },
+    { host: 'journals.sagepub.com', pathPrefix: '/doi/' },
+    { host: 'link.springer.com', pathPrefix: '/article/' },
+    { host: 'science.org', pathPrefix: '/doi/' },
+    { host: 'journals.aps.org', pathPrefix: '/prx/abstract/' },
+    { host: 'onlinelibrary.wiley.com', pathPrefix: '/doi/' },
+    { host: 'physoc.onlinelibrary.wiley.com', pathPrefix: '/doi/full/' },
+    { host: 'cell.com', pathPrefix: '/trends/cognitive-sciences/fulltext/' },
+    { host: 'researchgate.net', pathPrefix: '/publication/' },
+    { host: 'psycnet.apa.org', pathPrefix: '/record/' },
+    { host: 'biorxiv.org', pathPrefix: '/content/' },
+    { host: 'osf.io', pathPrefix: '/preprints/' },
+    { host: 'frontiersin.org', pathPrefix: '/journals/' },
+    { host: 'jstor.org' },
+    { host: 'proceedings.mlr.press' },
+    { host: 'journals.plos.org', pathPrefix: '/plosone/article' },
+    { host: 'ieeexplore.ieee.org', pathPrefix: '/document/' },
+    { host: 'royalsocietypublishing.org', pathPrefix: '/doi/' },
+    { host: 'papers.nips.cc', pathPrefix: '/paper_files/paper/' },
+    { host: 'philarchive.org', pathPrefix: '/archive/' },
+    { host: 'tandfonline.com', pathPrefix: '/doi/' },
+    { host: 'iopscience.iop.org', pathPrefix: '/article/' },
+    { host: 'academic.oup.com', pathPrefix: '/brain/article/' },
+    { host: 'elifesciences.org', pathPrefix: '/articles/' },
+    { host: 'escholarship.org', pathPrefix: '/content/' },
+    { host: 'pmc.ncbi.nlm.nih.gov', pathPrefix: '/articles/' },
+    { host: 'pubmed.ncbi.nlm.nih.gov' },
+    { host: 'openaccess.thecvf.com', pathPrefix: '/content/' },
+    { host: 'zenodo.org', pathPrefix: '/records/' },
+    { host: 'journals.asm.org', pathPrefix: '/doi/full/' },
+    { host: 'storage.courtlistener.com', pathPrefix: '/recap/' },
+    { host: 'bmj.com', pathPrefix: '/content/' },
+    { host: 'ntsb.gov', pathPrefix: '/investigations/' },
+    { host: 'aclanthology.org' },
+    { host: 'journals.ametsoc.org', pathPrefix: '/view/journals/' },
+    { host: 'substack.com', pathPrefix: '/p/' },
+    { host: 'citeseerx.ist.psu.edu' },
+  ];
+
   canHandleUrl(url: string): boolean {
-    return this.contentScriptMatches.some(pattern => url.includes(pattern));
+    const parsed = this.parseHttpUrl(url);
+    if (!parsed) {
+      return false;
+    }
+    
+    const hostname = parsed.hostname.toLowerCase();
+    const pathname = parsed.pathname;
+    
+    return this.trackedHosts.some(entry =>
+      (hostname === entry.host || hostname.endsWith(`.${entry.host}`)) &&
+      (!entry.pathPrefix || pathname.startsWith(entry.pathPrefix))
+    );
   }
 }
 

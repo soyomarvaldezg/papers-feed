@@ -85,16 +85,24 @@ export class NatureIntegration extends BaseSourceIntegration {
   readonly id = 'nature';
   readonly name = 'Nature'; 
 
-  // URL pattern for Nature articles with capture group for ID
+  // Host allowlist: only well-formed http(s) URLs on nature.com match
+  readonly allowedHosts = ['nature.com'];
+
+  // Path pattern for articles, anchored to the parsed URL's pathname with a
+  // capture group for the ID
   readonly urlPatterns = [
-    /nature\.com\/articles\/([^?]+)/,
+    /^\/articles\/([^/?#]+)/,
   ];
 
   /**
    * Extract paper ID from URL
    */
   extractPaperId(url: string): string | null {
-    const match = url.match(this.urlPatterns[0]);
+    const parsed = this.parseHttpUrl(url);
+    if (!parsed || !this.isAllowedHost(parsed.hostname.toLowerCase())) {
+      return null;
+    }
+    const match = parsed.pathname.match(this.urlPatterns[0]);
     return match ? match[1] : null;
   }
 

@@ -29,7 +29,7 @@ export class PaperManager {
     
     try {
       const obj = await this.client.getObject(objectId);
-      return obj.data as PaperMetadata;
+      return obj.data as unknown as PaperMetadata;
     } catch (error) {
       if (error instanceof Error && error.message.includes('No object found')) {
         return null;
@@ -48,7 +48,7 @@ export class PaperManager {
     
     try {
       const obj = await this.client.getObject(objectId);
-      const data = obj.data as PaperMetadata;
+      const data = obj.data as unknown as PaperMetadata;
       logger.debug(`Retrieved existing paper: ${paperIdentifier}`);
       return data;
     } catch (error) {
@@ -60,7 +60,7 @@ export class PaperManager {
           rating: paperData.rating || 'novote'
         };
 
-        const newobj = await this.client.createObject(objectId, defaultPaperData);
+        const newobj = await this.client.createObject(objectId, defaultPaperData as unknown as Json);
         logger.debug(`Created new paper: ${paperIdentifier}`);
         // reopen to trigger metadata hydration
         await this.client.fetchFromGitHub(`/issues/${newobj.meta.issueNumber}`, {

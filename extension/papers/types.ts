@@ -37,8 +37,11 @@ export interface PaperMetadata {
   // User-assigned rating (novote, thumbsup, thumbsdown)
   rating: string;
   
-  // Allow additional source-specific properties
-  [key: string]: any;
+  // Optional source-specific properties (explicitly enumerated so unknown
+  // fields from untrusted messages are rejected instead of persisted)
+  doi?: string;
+  journalName?: string;
+  sourceType?: string;
 }
 
 /**

@@ -76,20 +76,23 @@ async function validateSettings(settings: {
   sessionConfig: RawSessionConfig;
 }): Promise<void> {
   // Validate repository format
-  if (!/^[\w-]+\/[\w-]+$/.test(settings.githubRepo)) {
+  if (!/^[-\w]+\/[-\w]+$/.test(settings.githubRepo)) {
     throw new Error('Invalid repository format. Use username/repository');
   }
 
-  // Validate the token by making a test API call
-  const response = await fetch(`https://api.github.com/repos/${settings.githubRepo}`, {
-    headers: {
-      'Authorization': `token ${settings.githubToken}`,
-      'Accept': 'application/vnd.github.v3+json'
-    }
-  });
+  // Validate the token by making a test API call (skipped when the token
+  // field is left empty, which keeps the already-stored token)
+  if (settings.githubToken) {
+    const response = await fetch(`https://api.github.com/repos/${settings.githubRepo}`, {
+      headers: {
+        'Authorization': `token ${settings.githubToken}`,
+        'Accept': 'application/vnd.github.v3+json'
+      }
+    });
 
-  if (!response.ok) {
-    throw new Error('Invalid token or repository. Please check your credentials.');
+    if (!response.ok) {
+      throw new Error('Invalid token or repository. Please check your credentials.');
+    }
   }
 
   // Validate session settings
@@ -108,10 +111,13 @@ async function saveSettings(settings: {
   githubToken: string;
   sessionConfig: RawSessionConfig;
 }): Promise<void> {
-  await chrome.storage.sync.set({
-    githubRepo: settings.githubRepo,
-    githubToken: settings.githubToken
-  });
+  // Credentials live in local storage (never sync: the PAT must not leave
+  // this device); an empty token field keeps the stored token
+  const credentials: Record<string, string> = { githubRepo: settings.githubRepo };
+  if (settings.githubToken) {
+    credentials.githubToken = settings.githubToken;
+  }
+  await chrome.storage.local.set(credentials);
 
   await saveSessionConfig(settings.sessionConfig);
 }
@@ -119,9 +125,9 @@ async function saveSettings(settings: {
 // Initialize options page
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    // Load current settings
+    // Load current settings (credentials from local storage, never sync)
     const [storageItems, sessionConfig] = await Promise.all([
-      chrome.storage.sync.get(['githubRepo', 'githubToken']),
+      chrome.storage.local.get(['githubRepo', 'githubToken']),
       loadSessionConfig()
     ]);
 

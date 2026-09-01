@@ -5,13 +5,21 @@ export class PnasIntegration extends BaseSourceIntegration {
   readonly id = 'pnas';
   readonly name = 'PNAS'; 
 
+  // Host allowlist: only well-formed http(s) URLs on pnas.org match
+  readonly allowedHosts = ['pnas.org'];
+
+  // Path pattern for articles, anchored to the parsed URL's pathname
   readonly urlPatterns = [
-    /pnas\.org\/doi\/10\.1073\/pnas\.([0-9]+)/
+    /^\/doi\/10\.1073\/pnas\.([0-9]+)/
   ];
 
-  // upstream BaseSourceIntegration.extractPaperId should default to this behavior when able
+  // Extract the numeric PNAS id from the anchored pathname
   extractPaperId(url: string): string | null {
-    const match = url.match(this.urlPatterns[0]);
+    const parsed = this.parseHttpUrl(url);
+    if (!parsed || !this.isAllowedHost(parsed.hostname.toLowerCase())) {
+      return null;
+    }
+    const match = parsed.pathname.match(this.urlPatterns[0]);
     return match ? match[1] : null;
   }
 }

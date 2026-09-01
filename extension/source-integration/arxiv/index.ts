@@ -128,10 +128,14 @@ export class ArXivIntegration extends BaseSourceIntegration {
   readonly id = 'arxiv';
   readonly name = 'arXiv.org';
   
-  // URL patterns for papers
+  // Host allowlist: only well-formed http(s) URLs on arxiv.org are accepted
+  readonly allowedHosts = ['arxiv.org'];
+  
+  // Path patterns for papers, anchored to the parsed URL's pathname
+  // (previously matched anywhere in the URL, which was spoofable)
   readonly urlPatterns = [
-    /arxiv\.org\/(abs|pdf|html)\/([0-9.]+)/,
-    /arxiv\.org\/\w+\/([0-9.]+)/
+    /^\/(abs|pdf|html)\/([0-9.]+)/,
+    /^\/\w+\/([0-9.]+)/
   ];
   
   // Content script matches
@@ -146,8 +150,12 @@ export class ArXivIntegration extends BaseSourceIntegration {
    * Extract paper ID from URL
    */
   extractPaperId(url: string): string | null {
+    const parsed = this.parseHttpUrl(url);
+    if (!parsed || !this.isAllowedHost(parsed.hostname.toLowerCase())) {
+      return null;
+    }
     for (const pattern of this.urlPatterns) {
-      const match = url.match(pattern);
+      const match = parsed.pathname.match(pattern);
       if (match) {
         return match[2] || match[1]; // The capture group with the paper ID
       }
