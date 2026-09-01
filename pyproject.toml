@@ -2,10 +2,17 @@
 name = "papers-feed"
 version = "0.1.0"
 description = ""
-requires-python = ">=3.11"
-# dependencies = [
-#    "papers_feed"
-# ]
+# gh-store 0.11.x requires Python <3.14; keep the bound in sync
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "fire>=0.5.0",
+    "loguru>=0.7.3",
+    "arxiv>=2.1.0",
+    "requests>=2.31.0",
+    "lxml>=5.1.0",
+    "gh-store>=0.11.3",
+    "llamero>=0.2.5",
+]
 readme = "README.md"
 license = {file = "LICENSE"}
 

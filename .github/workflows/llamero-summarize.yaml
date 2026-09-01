@@ -10,24 +10,20 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write
 
     steps:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 1
 
-    - name: Install llamero
-      run: touch requirements.txt
-
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11'
         #cache: 'pip'
 
     - name: Install llamero
-      run: pip install llamero
+      run: pip install "llamero==0.2.5"
 
     - name: Generate summaries
       run: |

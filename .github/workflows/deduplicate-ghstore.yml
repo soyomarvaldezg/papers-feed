@@ -42,32 +42,35 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install gh-store
+          pip install "gh-store==0.11.3"
       
       - name: Run deduplication tool
         id: deduplicate
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+          SPECIFIC_OBJECT: ${{ github.event.inputs.specific_object }}
         run: |
           echo "Running deduplication process..."
           
-          # Set up basic command
-          CMD="python -m gh_store.tools.canonicalize --token ${{ secrets.GITHUB_TOKEN }} --repo ${{ github.repository }}"
+          CMD=(python -m gh_store.tools.canonicalize --token "$GH_TOKEN" --repo "$REPO")
           
           # Check if dry run
-          if [[ "${{ github.event.inputs.dry_run }}" == "true" ]]; then
-            CMD="$CMD --dry-run"
+          if [[ "$DRY_RUN" == "true" ]]; then
+            CMD+=(--dry-run)
             echo "::notice::Running in dry-run mode - no changes will be made"
           fi
           
           # Check if specific object requested
-          if [[ "${{ github.event.inputs.specific_object }}" != "" ]]; then
-            OBJECT_ID="${{ github.event.inputs.specific_object }}"
-            CMD="$CMD --object-id $OBJECT_ID"
-            echo "::notice::Processing specific object: $OBJECT_ID"
+          if [[ -n "$SPECIFIC_OBJECT" ]]; then
+            CMD+=(--object-id "$SPECIFIC_OBJECT")
+            echo "::notice::Processing specific object: $SPECIFIC_OBJECT"
           fi
           
           # First find duplicates and capture output
           echo "Finding duplicates..."
-          FIND_OUTPUT=$(eval "$CMD --find-duplicates" 2>&1)
+          FIND_OUTPUT=$("${CMD[@]}" --find-duplicates 2>&1)
           echo "$FIND_OUTPUT"
           
           # Check if duplicates found
@@ -81,7 +84,7 @@ jobs:
           
           # Process duplicates
           echo "Processing duplicates..."
-          DEDUP_OUTPUT=$(eval "$CMD --deduplicate" 2>&1)
+          DEDUP_OUTPUT=$("${CMD[@]}" --deduplicate 2>&1)
           echo "$DEDUP_OUTPUT"
           
           # Extract metrics

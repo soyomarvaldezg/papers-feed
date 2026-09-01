@@ -82,29 +82,45 @@
   </xsl:template>
 
   <!-- References -->
-  <!-- If the target attribute is missing, insert a '#' as a fallback -->
+  <!-- Only http(s) URLs and # fragments are safe to emit as link targets;
+       anything else (e.g. javascript:, ftp:, file:) falls back to plain text.
+       If the target attribute is missing, insert a '#' as a fallback -->
   <xsl:template match="tei:ref">
-      <xsl:text>[</xsl:text>
-      <xsl:apply-templates/>
-      <xsl:text>](</xsl:text>
       <xsl:choose>
-        <xsl:when test="@target">
+        <xsl:when test="starts-with(@target, 'http://') or starts-with(@target, 'https://') or starts-with(@target, '#')">
+          <xsl:text>[</xsl:text>
+          <xsl:apply-templates/>
+          <xsl:text>](</xsl:text>
           <xsl:value-of select="@target"/>
+          <xsl:text>)</xsl:text>
+        </xsl:when>
+        <xsl:when test="@target">
+          <xsl:apply-templates/>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:text>#</xsl:text>
+          <xsl:text>[</xsl:text>
+          <xsl:apply-templates/>
+          <xsl:text>](#)</xsl:text>
         </xsl:otherwise>
       </xsl:choose>
-      <xsl:text>)</xsl:text>
   </xsl:template>
 
   <!-- Figures -->
+  <!-- Like refs, graphic URLs are only emitted when the scheme is safe -->
   <xsl:template match="tei:figure">
-      <xsl:text>![</xsl:text>
-      <xsl:value-of select="normalize-space(tei:figDesc)"/>
-      <xsl:text>](</xsl:text>
-      <xsl:value-of select="tei:graphic/@url"/>
-      <xsl:text>)&#xa;&#xa;</xsl:text>
+      <xsl:choose>
+        <xsl:when test="starts-with(tei:graphic/@url, 'http://') or starts-with(tei:graphic/@url, 'https://') or starts-with(tei:graphic/@url, '#')">
+          <xsl:text>![</xsl:text>
+          <xsl:value-of select="normalize-space(tei:figDesc)"/>
+          <xsl:text>](</xsl:text>
+          <xsl:value-of select="tei:graphic/@url"/>
+          <xsl:text>)&#xa;&#xa;</xsl:text>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="normalize-space(tei:figDesc)"/>
+          <xsl:text>&#xa;&#xa;</xsl:text>
+        </xsl:otherwise>
+      </xsl:choose>
   </xsl:template>
 
   <!-- Tables -->

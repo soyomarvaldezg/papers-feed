@@ -13,11 +13,7 @@
     "baseUrl": "."
   },
   "include": [
-    "**/*.ts",
-    "background.js",
-    "content.js",
-    "popup.js",
-    "options.js"
+    "**/*.ts"
   ],
   "exclude": ["node_modules", "dist"]
 }

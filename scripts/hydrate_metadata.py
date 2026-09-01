@@ -6,7 +6,6 @@ Fetches metadata for arXiv papers identified by issue labels and stores it using
 """
 
 import json
-import sys
 import os
 import re
 from typing import Dict, List, Optional, Any
@@ -27,7 +26,7 @@ def is_metadata_satisfied(data: dict) -> bool:
 
 def is_valid_arxiv_id(arxiv_id: str) -> bool:
     """Validate arXiv ID format."""
-    return bool(re.match(r'\d{4}\.\d{4,5}(v\d+)?|\w+\/\d{7}(v\d+)?', arxiv_id))
+    return bool(re.fullmatch(r'(\d{4}\.\d{4,5}(v\d+)?|\w+/\d{7}(v\d+)?)', arxiv_id))
 
 def extract_arxiv_id_from_object_id(object_id: str) -> str:
     """Extract the arXiv ID from a paper ID with various prefixing schemes."""
@@ -91,8 +90,8 @@ def hydrate_issue_metadata(issue: int, token:str, repo:str):
     object_id = obj.meta.object_id
     #object_id = get_object_id_from_labels(issue)
     if not object_id.startswith("paper:"):
-        logger.info("Not a paper object, exiting.")
-        sys.exit(0)
+        logger.info("Not a paper object, skipping.")
+        return
     if 'url' in object_id:
         logger.info("Metadata hydration is currently only supported for the arxiv source type.")
         store.process_updates(issue) # ...why is this a separate second step? sheesh, I reaaly did rube goldberg the shit out of this thing

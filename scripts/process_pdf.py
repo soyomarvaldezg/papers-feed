@@ -135,10 +135,13 @@ def process_pdf_grobid(
         if not xslt_path.exists():
             raise FileNotFoundError(f"XSLT stylesheet not found: {xslt_path}")
         
-        xslt = etree.parse(str(xslt_path))
+        # TEI XML comes from an external Grobid service; never resolve
+        # entities, load DTDs, or fetch anything over the network (XXE).
+        parser = etree.XMLParser(resolve_entities=False, no_network=True, load_dtd=False, huge_tree=False)
+        xslt = etree.parse(str(xslt_path), parser)
         transform = etree.XSLT(xslt)
-        
-        tei_doc = etree.parse(str(tei_path))
+
+        tei_doc = etree.parse(str(tei_path), parser)
         markdown = str(transform(tei_doc))
         markdown = sanitize_markdown(markdown)
         

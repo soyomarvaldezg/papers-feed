@@ -15,8 +15,6 @@ concurrency:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
   actions: read
 
 jobs:
@@ -53,15 +51,15 @@ jobs:
           cache: 'pip'
           
       - name: Install dependencies
-        run: pip install gh-store
+        run: pip install "gh-store==0.11.3"
 
       - name: Update snapshot
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SNAPSHOT_PATH: data/papers/gh-store-snapshot.json
         run: |
           mkdir -p $(dirname ${{ env.SNAPSHOT_PATH }})
           python -m gh_store update-snapshot \
-            --token ${{ secrets.GITHUB_TOKEN }} \
             --repo ${{ github.repository }} \
             --snapshot-path ${{ env.SNAPSHOT_PATH }}
       
@@ -81,9 +79,9 @@ jobs:
 
       - name: Commit changes
         id: commit-changes
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@b863ae1933cb653a53c021fe36dbb774e1fb9403 # v5
         with:
-          commit_message: "chore: Update store snapshot [${{ github.run_id }}]"
+          commit_message: "chore: Update store snapshot [${{ github.run_id }}] [skip ci]"
           file_pattern: 'data/papers/**'
       
   deploy:
@@ -103,6 +101,25 @@ jobs:
         with:
           name: papers-json
           path: web/
+
+      # Interaction telemetry (interactions:* objects) must never be published
+      # to the public site; only the uploaded copy is filtered, the repo file
+      # keeps the raw data.
+      - name: Strip interaction telemetry from public snapshot
+        run: |
+          python3 - << 'EOF'
+          import json
+          from pathlib import Path
+
+          path = Path("web/gh-store-snapshot.json")
+          snapshot = json.loads(path.read_text())
+          snapshot["objects"] = {
+              object_id: obj
+              for object_id, obj in snapshot.get("objects", {}).items()
+              if not object_id.startswith("interactions:")
+          }
+          path.write_text(json.dumps(snapshot))
+          EOF
 
       - name: Build web directory
         run: |
@@ -132,7 +149,7 @@ jobs:
           echo "{\"branch\": \"${{ steps.git-info.outputs.branch }}\", \"commit\": \"${{ steps.git-info.outputs.commit }}\", \"repo\": \"${{ steps.git-info.outputs.repo }}\"}" > web/data/git-info.json
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@373f7f263a76c20808c831209c920827a82a2847 # v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./web

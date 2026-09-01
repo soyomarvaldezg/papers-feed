@@ -12,29 +12,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     defaults:
       run:
         working-directory: extension
 
     steps:
     - uses: actions/checkout@v4
-    
-    # Generate package-lock.json if it doesn't exist
-    # - name: Initialize npm
-    #   run: |
-    #     if [ ! -f "package-lock.json" ]; then
-    #       npm install --package-lock-only --no-audit
-    #     else
-    #       echo "package-lock.json exists"
-    #     fi
-    
-    # Regenerate package-lock.json to ensure it matches package.json
-    - name: Regenerate package-lock.json
-      run: |
-        if [ -f "package-lock.json" ]; then
-          rm -f package-lock.json
-        fi
-        npm install --package-lock-only --no-audit
 
     - name: Flush old build
       run: rm -rf dist/
@@ -47,8 +32,7 @@ jobs:
         #cache-dependency-path: './extension/package-lock.json'
         
     - name: Install dependencies
-      #run: npm ci --prefer-offline
-      run: npm install --prefer-offline
+      run: npm ci
         
       
     - name: Show environment info
@@ -87,8 +71,8 @@ jobs:
 
     # Commit the built files
     - name: Commit bundled files
-      uses: stefanzweifel/git-auto-commit-action@v5
+      uses: stefanzweifel/git-auto-commit-action@b863ae1933cb653a53c021fe36dbb774e1fb9403 # v5
       with:
-        commit_message: "chore: Update extension bundles"
+        commit_message: "chore: Update extension bundles [skip ci]"
         file_pattern: "extension/dist/*"
         #branch: ${{ github.ref }}
