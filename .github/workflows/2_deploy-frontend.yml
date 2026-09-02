@@ -10,7 +10,7 @@ on:
       - '.github/workflows/2_deploy-frontend.yml'
 
 concurrency:
-  group: store-deploy
+  group: main-writers
   cancel-in-progress: false
 
 permissions:

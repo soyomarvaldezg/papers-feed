@@ -9,6 +9,10 @@ on:
     branches: [ main, ext-use-gh-store ]
   workflow_dispatch:
 
+concurrency:
+  group: main-writers
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
