@@ -1,5 +1,5 @@
 {
-  "snapshot_time": "2026-09-01T04:14:21.999499+00:00",
+  "snapshot_time": "2026-09-02T22:40:58.148028+00:00",
   "repository": "soyomarvaldezg/papers-feed",
   "objects": {
     "interactions:arxiv.2608.22474": {
@@ -671,6 +671,408 @@
         "object_id": "paper:arxiv.2608.28432",
         "created_at": "2026-08-31T17:11:47+00:00",
         "updated_at": "2026-08-31T17:12:08+00:00",
+        "version": 1
+      }
+    },
+    "interactions:arxiv.2609.01544": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2609.01544",
+        "interactions": []
+      },
+      "meta": {
+        "issue_number": 40,
+        "object_id": "interactions:arxiv.2609.01544",
+        "created_at": "2026-09-02T22:38:00+00:00",
+        "updated_at": "2026-09-02T22:38:02+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2609.01544": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2609.01544",
+        "url": "https://arxiv.org/abs/2609.01544",
+        "title": "Variable Selection for Feature-Based Newsvendor",
+        "authors": "Zhaoliang Yuan, Jie Wang",
+        "abstract": "Feature-based newsvendor models use observable covariates to tailor inventory decisions, aiming to balance holding and shortage costs under demand uncertainty. However, high-dimensional feature sets often hinder interpretability and inflate data collection and implementation costs. This paper studies variable selection for the feature-based newsvendor problem under a hard cardinality constraint on the number of selected features. We formulate the resulting $\\ell_0$-constrained empirical newsvendor problem with $\\ell_2$-regularization, establish its computational hardness, and develop a mixed-integer second-order cone programming reformulation that strengthens the standard Big-$M$ formulation. To enable scalability beyond exact optimization, we develop a randomized-rounding algorithm with a bi-criteria guarantee and a greedy heuristic. Statistically, we provide theoretical analysis of the resulting sparse policy estimator, including finite-sample estimation error, out-of-sample risk bounds, and support recovery guarantees. Extensive experiments on both synthetic and real data illustrate the computational and statistical trade-offs among various baselines. Our results demonstrate that the proposed variable selection framework achieves competitive out-of-sample operational costs while using substantially fewer covariates.",
+        "timestamp": "2026-09-02T22:18:49.182Z",
+        "rating": "novote",
+        "publishedDate": "2026/09/01",
+        "tags": [
+          "Machine Learning (stat.ML)",
+          "Machine Learning (cs.LG)"
+        ],
+        "doi": "",
+        "journalName": "",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 35,
+        "object_id": "paper:arxiv.2609.01544",
+        "created_at": "2026-09-02T22:18:49+00:00",
+        "updated_at": "2026-09-02T22:19:13+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2608.29560": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2608.29560",
+        "url": "https://arxiv.org/abs/2608.29560",
+        "title": "Which LLM for Which Work? Budgeted Model Allocation under Uncertain Evaluation",
+        "authors": "Hamed Khosravi, Xiaoming Huo",
+        "abstract": "A company with a fixed artificial intelligence (AI) budget must decide which large language model (LLM) handles each recurring workload. What it lacks is the quality table, how well each model performs on each workload. Given that table, the decision is a multiple-choice knapsack problem and is routine to solve, so estimating it is the difficulty, and that estimation fails in two ways. Models are rarely compared on the same work, and the recorded score is usually a proxy rather than the outcome the company values. Causal and off-policy methods repair the first but condition on the second, while evaluator-validation methods estimate the second but stop short of the decision. Worse, buying more re-evaluation cannot settle the second: randomization governs which requests are scored, not how a score is produced, so the table stays uncertain however much evaluation is purchased. Yet the deployment decision may still be determined even when the table is not. We therefore ask whether one assignment stays optimal across every quality table consistent with the evidence. For the fixed-budget problem, this admits an exact two-solve certificate: solve once at the estimated table and once at a least-favourable table. Agreement certifies the assignment; disagreement identifies the model-workload pairs where further evidence can matter. We propose CASE (causal active sequential experimentation), which targets evaluation to those pairs and repeats the test as evidence accumulates. On a production log, the measurement failure is the larger of the two: correcting assignment exactly still leaves most of the loss, and randomized re-evaluation does not remove it. In our experiments, the available evidence often does not determine the assignment. On paid software tasks, better information about model quality yields more savings than further optimization of the assignment on the same estimates.",
+        "timestamp": "2026-09-02T22:19:39.150Z",
+        "rating": "novote",
+        "publishedDate": "2026/08/30",
+        "tags": [
+          "Machine Learning (cs.LG)",
+          "Optimization and Control (math.OC)",
+          "Machine Learning (stat.ML)"
+        ],
+        "doi": "",
+        "journalName": "",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 38,
+        "object_id": "paper:arxiv.2608.29560",
+        "created_at": "2026-09-02T22:19:39+00:00",
+        "updated_at": "2026-09-02T22:20:02+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2608.31059": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2608.31059",
+        "url": "https://arxiv.org/abs/2608.31059",
+        "title": "When Can We Work in Embedding Space? What Text Embeddings Preserve",
+        "authors": "Simon Freyaldenhoven",
+        "abstract": "When do text embeddings work as inputs to empirical analysis? Their use rests on an assumption: that we can trade text for its low-dimensional embedding, and lose little in doing so. I make that assumption precise under a generative model in which documents are mixtures of latent topics. I study two uses---clustering units in embedding space and controlling for high-dimensional text. A cluster of embeddings is a set of documents with similar topic mixtures; controlling for the embedding is equivalent to controlling for the topic mixture, so validity reduces to whether that mixture captures the confounding. In an application to 363 U.S. metropolitan areas, embedding-based clusters of LLM-generated economic descriptions recover interpretable economic archetypes and separate local employment dynamics more sharply than clustering on model residuals, or on a curated set of industry and demographic covariates.",
+        "timestamp": "2026-09-02T22:19:31.408Z",
+        "rating": "novote",
+        "publishedDate": "2026/08/31",
+        "tags": [
+          "Econometrics (econ.EM)",
+          "Computation and Language (cs.CL)",
+          "Machine Learning (stat.ML)"
+        ],
+        "doi": "",
+        "journalName": "",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 37,
+        "object_id": "paper:arxiv.2608.31059",
+        "created_at": "2026-09-02T22:19:31+00:00",
+        "updated_at": "2026-09-02T22:19:52+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2609.00774": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2609.00774",
+        "url": "https://arxiv.org/abs/2609.00774",
+        "title": "Semi-Supervised Classification with Informative Missing Labels in Weibull Mixture Models",
+        "authors": "Jinran Wu, You-Gan Wang, Geoffrey J. McLachlan",
+        "abstract": "We consider semi-supervised classification from a partially classified sample arising from a two-component Weibull mixture. The feature is observed for all data, whereas some class labels are missing. The probability of a missing label is modelled as a function of classification uncertainty, giving a feature-dependent missing-at-random (MAR) mechanism that shares parameters with the Weibull-mixture classifier. The missing-label indicators can therefore provide information about the classifier in addition to the observed features and available class labels. Under a common Weibull shape, a Bayes' rule has at most one positive decision boundary, which is unique when the rule is nonconstant; under unequal shapes, it can have two. We characterise these decision regions, derive the Fisher information for the classifier after adjustment for nuisance parameters in the missingness model, and obtain a decision-boundary expansion of the expected error rate of the plug-in sample rule relative to the Bayes error. The expansion yields classification-specific asymptotic relative efficiency formulas for the one- and two-boundary cases and shows that a positive-definite increase in Fisher information is sufficient, but not necessary, for a smaller first-order expected error rate. Numerical studies and a semi-synthetic analysis based on hard-drive failure data illustrate potential reductions in expected error rate and improvements in decision-boundary estimation from modelling feature-dependent label missingness.",
+        "timestamp": "2026-09-02T22:18:58.628Z",
+        "rating": "novote",
+        "publishedDate": "2026/09/01",
+        "tags": [
+          "Machine Learning (stat.ML)",
+          "Machine Learning (cs.LG)"
+        ],
+        "doi": "",
+        "journalName": "",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 36,
+        "object_id": "paper:arxiv.2609.00774",
+        "created_at": "2026-09-02T22:18:58+00:00",
+        "updated_at": "2026-09-02T22:19:21+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2609.01519": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2609.01519",
+        "url": "https://arxiv.org/abs/2609.01519",
+        "title": "When Guardrails Look Effective: Construct Validity Failures in LLM Agent Commerce Evaluation",
+        "authors": "Peiying Zhu, Sidi Chang",
+        "abstract": "Interactive simulations increasingly evaluate policies in markets populated by language-model agents. Their outputs can look economic---prices, profits, consumer surplus, and welfare---without instantiating the behavior named in the claim. We audit this risk in a multi-turn buyer--seller testbed for configurable hotel transactions. An initial implementation reported welfare gains from two marketplace guardrails of +87.4, +35.0, and +28.8 across a Qwen2.5 1.5B--14B ladder. It also gave guarded and unguarded agents different offer schemas and choice procedures. Holding the schema and buyer chooser fixed changes the paired contrasts to +7.2, -13.9, and +23.8. The four largest 14B single-generation effects averaged +229; after three generations per profile-condition, they averaged +37.6 (95% bootstrap interval [-34.2, 109.3]), while generation residuals account for 49.9% of variation in this post-hoc probe. A seller-incentive check is non-monotone: increasing profit pressure produces less profit than the default seller prompt. Scripted positive controls show why this matters. A profit-maximizing seller already attains first-best welfare, so guardrails mostly redistribute and reduce welfare; they create welfare only when the seller is explicitly programmed to force inefficient bundles. We contribute a construct-validity contract separating incentive validity, protocol isolation, stochastic stability, and welfare accounting, and returning INVALID or INCONCLUSIVE before substantive policy claims. In our case, the original estimate is INVALID under protocol isolation, while the controlled study remains INCONCLUSIVE under incentive validity and stochastic stability. The case does not show that guardrails are ineffective; it shows their apparent value is unidentified until the simulated agents and protocol pass these checks.",
+        "timestamp": "2026-09-02T22:18:08.933Z",
+        "rating": "novote",
+        "publishedDate": "2026/09/01",
+        "tags": [
+          "Artificial Intelligence (cs.AI)"
+        ],
+        "doi": "",
+        "journalName": "",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 34,
+        "object_id": "paper:arxiv.2609.01519",
+        "created_at": "2026-09-02T22:18:09+00:00",
+        "updated_at": "2026-09-02T22:18:30+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2609.00035": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2609.00035",
+        "url": "https://arxiv.org/abs/2609.00035",
+        "title": "SilentProbe: Measuring Silent Failure in Production APIs Used as Agent Tools",
+        "authors": "Zongrong Li, Shengkun Ye, Feiyou Guo, Zuoyou Dang",
+        "abstract": "An LLM agent calling a production API cannot distinguish a query that matched nothing from a query the server did not understand. Both return HTTP 200 with a parsable body, no exception to catch and no field to branch on. We ask what predicts which one occurred, and what it does to the agent. Auditing 721,320 parameters across 2,501 independently published OpenAPI documents, we find that 7.5% declare an enumeration and 15.2% declare any machine-checkable constraint at all, while 40.1% of documents state at least one constraint in prose that their schema does not encode. Executing 219 schema-derived perturbations against live commercial endpoints from 27 vendors, reached through a single aggregation layer (Monid) that publishes a schema and returns a run identifier for every call, we find that constraint form, not vendor identity, predicts honesty: machine-checkable constraints yielded an honest error in 111 of 111 cases, prose-only constraints failed silently in 44 of 61 (p = 2e-13). Twelve models across eight families then met these endpoints on ordinary tasks. A vocabulary that the description merely exemplifies was missed by every model on 88 of 88 attempts, while vocabularies written out in full were used correctly 88 to 91% of the time. Running the full agent loop, models detected the resulting silent failure in 12% of cases, repaired it in 0%, asserted a false negative to the user in 41%, and invented a figure in 12%. Promoting the vocabulary into the schema removes the failure, from 88 of 88 to 0 of 89. The fix is one line of schema rather than a better model. Code, schemas, perturbation sets, agent transcripts and per-call run identifiers are released at this https URL.",
+        "timestamp": "2026-09-02T22:17:11.760Z",
+        "rating": "novote",
+        "publishedDate": "2026/08/29",
+        "tags": [
+          "Information Retrieval (cs.IR)",
+          "Software Engineering (cs.SE)"
+        ],
+        "doi": "",
+        "journalName": "",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 33,
+        "object_id": "paper:arxiv.2609.00035",
+        "created_at": "2026-09-02T22:17:12+00:00",
+        "updated_at": "2026-09-02T22:17:34+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2609.00579": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2609.00579",
+        "url": "https://arxiv.org/abs/2609.00579",
+        "title": "Predicting Program Exit Code with LLMs and Programming Language Semantics",
+        "authors": "Lara Marinov, Aditya Thimmaiah, Jayanth Srinivasa, Junyi Jessy Li, Milos Gligoric",
+        "abstract": "Large language models (LLMs) have shown proficiency in various software engineering tasks, such as code generation and translation. However, a key limitation in their performance may be their (lack of) understanding of programming-language semantics. Even when explicit semantics are given, it remains unclear whether LLMs apply those rules or lean on priors learned during pre-training instead. We study if LLMs lean on priors or given semantics with a novel task--Program Executability Prediction (PrEx)--that asks models to predict whether a program is semantically valid or invalid (and, if invalid, which formal rule it violates) given the program's syntax and operational semantics. Because PrEx requires both valid and invalid programs, we build a dataset with systematically generated invalid transformations derived from valid programs. We evaluate open-source coding LLMs under two semantic formalisms and two semantic shifts across Human-Written, LLM-Translated, and Fuzzer-Generated program splits. Our findings show that LLMs lean on pre-training priors rather than systematically applying the given rules, performing especially poorly on modified semantics and degrading further as program complexity increases. PrEx is available at this https URL.",
+        "timestamp": "2026-09-02T22:17:02.314Z",
+        "rating": "novote",
+        "publishedDate": "2026/09/01",
+        "tags": [
+          "Programming Languages (cs.PL)",
+          "Artificial Intelligence (cs.AI)",
+          "Computation and Language (cs.CL)",
+          "Software Engineering (cs.SE)"
+        ],
+        "doi": "10.1145/3843750.3843842",
+        "journalName": "",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 32,
+        "object_id": "paper:arxiv.2609.00579",
+        "created_at": "2026-09-02T22:17:02+00:00",
+        "updated_at": "2026-09-02T22:17:22+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2609.00006": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2609.00006",
+        "url": "https://arxiv.org/abs/2609.00006",
+        "title": "Harness Engineering: Anatomy, Architecture, and Evolution of Coding Agents -- A Source-Code Study of Eleven Systems",
+        "authors": "Paul Barbaste, Tristan Darrigol, Germain Vu, Tom Wiltberger",
+        "abstract": "An agent is a model plus a harness -- the runtime that couples an LLM to the world through a loop, tools, context management, safety controls, orchestration, and extension surfaces. Harness engineering, named as a discipline in early 2026, is the design and evolution of that runtime. This paper gives the young discipline its most comprehensive empirical foundation to date: a source-code anatomy of eleven production coding harnesses (Claude Code, Codex CLI, Gemini CLI, Mistral Vibe, OpenHands, Aider, Mini-SWE-Agent, Hermes, Pi, OpenCode, OpenClaw), plus Omnigent, the first meta-harness, analyzed as a contrast point. We define what a harness is, map its seven canonical subsystems with the minimal and maximal implementation of each, and dissect all eleven systems along those subsystems. The audit yields 13 cross-cutting observations and a catalog of 29 recurring design patterns. Two absences survive a threefold corpus expansion: across roughly four million lines of Python, TypeScript, and Rust, no agent runtime imports a general-purpose agentic framework, and none retrieves code with vector embeddings; the field runs on hand-rolled async loops and deterministic retrieval. this http URL skills lead MCP in adoption (9/11 vs. 8/11), and ACP ships in six systems with a new third role: harness hosting. Because the original eight systems were re-pinned rather than replaced, the study also contains a controlled longitudinal sample -- the same harnesses source-diffed across one quarter -- showing convergence becoming imitation and behavioral policy migrating from prompt prose to configuration. These threads converge on the paper's thesis: in the first half of 2026 the coding harness completed a turn from tool to platform. The paper closes with 18 design recommendations and a 90-line minimum-viable-harness scaffold.",
+        "timestamp": "2026-09-02T22:16:48.113Z",
+        "rating": "novote",
+        "publishedDate": "2026/07/15",
+        "tags": [
+          "Software Engineering (cs.SE)",
+          "Multiagent Systems (cs.MA)"
+        ],
+        "doi": "",
+        "journalName": "",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 31,
+        "object_id": "paper:arxiv.2609.00006",
+        "created_at": "2026-09-02T22:16:48+00:00",
+        "updated_at": "2026-09-02T22:17:11+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2609.00252": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2609.00252",
+        "url": "https://arxiv.org/abs/2609.00252",
+        "title": "Spec-Driven Development for Agentic Software Engineering: Harnessing Human-Agent Teamwork",
+        "authors": "Jessica Diaz, Joaquin Gayoso, Andrea Cimminio, Jorge Perez",
+        "abstract": "Context: Software engineering is moving from AI-assisted practices like vibe coding, in which assistants accelerate individual developers, towards Agentic Software Engineering (ASE), in which autonomous agents are delegated goal-level tasks. However, industry reports a productivity paradox: as individual productivity increases, team throughput, review capacity, and stability degrade because team-scale software engineering discipline is neglected. Objective: This paper aims to establish the conceptual and methodological foundations of Spec-Driven Development (SDD) as an enabling discipline for ASE at team scale and characterize the harness, i.e., the technical and methodological mechanisms through which teams govern agent behavior. Method: We conducted a conceptual analysis drawing predominantly on gray literature, including ASE vision and roadmap papers, practitioner reports, talks, and tooling, because peer-reviewed evidence and a shared academic-industrial vocabulary are not yet established. Results: Using a comparative characterization of the paradigm progression as conceptual framing, the article presents (i) a socio-technical model of SDD in which specifications act as the contract substrate between humans and agents; (ii) an operational characterization of the harness, distinguishing the technical harness around the agent from the methodological harness around the team, with worked examples; and (iii) a typology of five human--agent interaction patterns through which the human role is redefined. Conclusion: We conclude that SDD reconstitutes, in specification-centric form, the contracts that vibe coding dissolves: accountability, verifiability, and transferability. Given the immaturity of the evidence base, this work is presented as a first step toward academic-industrial consensus rather than a validated theory, and outlines a research agenda for future empirical validation.",
+        "timestamp": "2026-09-02T22:16:26.591Z",
+        "rating": "novote",
+        "publishedDate": "2026/08/31",
+        "tags": [
+          "Software Engineering (cs.SE)"
+        ],
+        "doi": "",
+        "journalName": "",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 30,
+        "object_id": "paper:arxiv.2609.00252",
+        "created_at": "2026-09-02T22:16:26+00:00",
+        "updated_at": "2026-09-02T22:16:51+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2609.00227": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2609.00227",
+        "url": "https://arxiv.org/abs/2609.00227",
+        "title": "Don't Let the Model Write the YAML: Deterministic, Minimal-Diff GitOps Remediation from LLM-Proposed Field Changes",
+        "authors": "Pruthvi Davineni",
+        "abstract": "LLM agents increasingly diagnose incidents and propose remediations. In a GitOps workflow, applying a fix means editing a version-controlled config file, and the obvious implementation, having the model author the edited file or a diff, is what practitioners reach for first. Evaluating that choice on real Kubernetes manifests, we find no text-generation strategy is safe for unattended automation. Unified diffs are unsafe: under strict patching almost none apply, but that is an artifact, since a tolerant tool (GNU patch) applies 96%, yet silently misapplies about 1 in 7 (14-20%) with no error signal. Full-file rewrite is capability-dependent: a small model corrupts the file, while a frontier model is usually correct but non-deterministic (it silently drops a field or edits a neighbor on some runs) and must regenerate the whole file, costing O(file size) per edit. We present an alternative that separates the semantic decision (which resource, field, and value) from the syntactic act of editing the file. The agent emits only a structured field-change intent; a deterministic pipeline indexes manifests by (kind, name), locates the target scalar's exact character span via the YAML parser's node position marks, and replaces only that span in the raw text. Because the file is never re-serialized, the diff is minimal by construction, formatting and comments are preserved, and the edit is correct and deterministic independent of the model, at O(1) generation cost. The contribution is the pairing of an LLM-proposed intent with a deterministic, fail-closed application contract for GitOps. We implement it in KubeAstra (Apache-2.0) and release the benchmark. Our claim is scoped to faithful application of a known change; whether the change is right is left to human PR review.",
+        "timestamp": "2026-09-02T22:16:12.289Z",
+        "rating": "novote",
+        "publishedDate": "2026/08/31",
+        "tags": [
+          "Software Engineering (cs.SE)",
+          "Artificial Intelligence (cs.AI)",
+          "Distributed",
+          "Parallel",
+          "and Cluster Computing (cs.DC)"
+        ],
+        "doi": "",
+        "journalName": "",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 29,
+        "object_id": "paper:arxiv.2609.00227",
+        "created_at": "2026-09-02T22:16:12+00:00",
+        "updated_at": "2026-09-02T22:16:35+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2609.01503": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2609.01503",
+        "url": "https://arxiv.org/abs/2609.01503",
+        "title": "The Data Problem in Software Vulnerability Analysis: Artifacts, Quality, and Consumption",
+        "authors": "Yu Nong, Yao Du, Tianxiang Xu, Haipeng Cai",
+        "abstract": "Learning- and LLM-based software vulnerability analysis is only as trustworthy as the data it is trained and evaluated on, yet that data is rarely examined as a first-class object. We investigate the data behind vulnerability analysis through a dataset-centric taxonomy that separates what an artifact is (code, metadata, patches, tests/PoCs, reasoning, traces), how good it is (realism, label evidence, scale, diversity, leakage, availability), and what it is used for. From a systematically assembled corpus of 1522 papers covering 2016-2026 plus foundational earlier work we deep-code a tiered set of 111 anchor papers, backing every affirmative rubric-graded value with a verbatim span, and we report, per attribute, both how much it has been studied and how well datasets achieve it. The results trace an evidence ladder: executable artifacts are the only major type where 15 of the 24 datasets are both graded real-world and carry labels that received an independent check, while code-sample datasets-the largest category in both the auto-tagged corpus and the anchor set-are the least realistic: 20 of the 41 draw their vulnerabilities from authentic projects or CVEs, but only 3 keep the sample at the unit the code is deployed in, and only 2 do both-though these are coarse component tests, and just one code-sample dataset meets the codebook's stricter full-context real-world grade. Among these, leakage goes unaddressed by 49 of the 90 datasets where it applies, more than a quarter say nothing about availability, reasoning data has arrived only recently and is mostly model-generated, and primary trace corpora remain limited to three datasets, the total after a corpus-wide screen and a full-text check of every candidate it surfaced, with further datasets releasing traces secondarily behind benchmarks and harnesses.",
+        "timestamp": "2026-09-02T22:15:37.519Z",
+        "rating": "novote",
+        "publishedDate": "2026/09/01",
+        "tags": [
+          "Software Engineering (cs.SE)"
+        ],
+        "doi": "",
+        "journalName": "",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 28,
+        "object_id": "paper:arxiv.2609.01503",
+        "created_at": "2026-09-02T22:15:37+00:00",
+        "updated_at": "2026-09-02T22:15:57+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2608.29543": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2608.29543",
+        "url": "https://arxiv.org/abs/2608.29543",
+        "title": "Evaluating LLMs on Conversational Text-to-SQL under Chain Ambiguity and Intent Drift",
+        "authors": "Yujia Liu, Jiayan Lin, Zijin Hong, Zheng Yuan, Shengyuan Chen, Hao Chen, Qinggang Zhang, Xiao Huang, Feiran Huang",
+        "abstract": "Recent advances in large language models (LLMs) have established conversational text-to-SQL as a practical interface between users and databases, often involving multiple turns of clarification and revision. However, existing benchmarks primarily evaluate execution accuracy, leaving the unfolding and shifting of user intent across turns largely uncovered. To address this, we introduce TIDE-Bench, a benchmark for conversational text-to-SQL under chain ambiguity and intent drift evaluation, targeting two recurring patterns: chain ambiguity, where an underspecified question triggers layered clarification with conditional dependencies, and intent drift, where the user retracts and replaces a previously committed request element. Built on 514 anchor SQLs from BIRD, TIDE-Bench comprises 1,542 samples and introduces dedicated metrics for chain identification and drift recognition-resolution beyond execution accuracy. Evaluating 12 advanced LLMs reveals a persistent chain identification bottleneck unaffected by clarification frequency, a wide drift recognition-resolution gap, and overlap between failure modes when jointly activated. The corresponding code of TIDE-Bench is released for further research.",
+        "timestamp": "2026-09-02T22:14:51.178Z",
+        "rating": "novote",
+        "publishedDate": "2026/08/30",
+        "tags": [
+          "Computation and Language (cs.CL)",
+          "Artificial Intelligence (cs.AI)",
+          "Databases (cs.DB)"
+        ],
+        "doi": "",
+        "journalName": "",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 27,
+        "object_id": "paper:arxiv.2608.29543",
+        "created_at": "2026-09-02T22:14:51+00:00",
+        "updated_at": "2026-09-02T22:15:15+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2608.28352": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2608.28352",
+        "url": "https://arxiv.org/abs/2608.28352",
+        "title": "No Silver Bullet: Boosting GaussDB Performance on the 30TB TPC-H Workload",
+        "authors": "Tim Zeyl, Jason Lam, Shu Lin, Reza Pournaghi, Qi Cheng, Calvin Wong, Kaixiang Du, Yuliang He, Yang Sun, Weicheng Wang, Paul Lee, Chen Ruo, Yang Xinyi, Li Qunan, Wang Junjie, Hu Dongxing, Chong Chen, Per-Ake Larson",
+        "abstract": "GaussDB is Huawei's premier database system, designed for large-scale deployments and the most demanding workloads. It is a distributed shared-nothing system, capable of handling all types of workloads. This paper outlines a series of modifications to GaussDB aimed at improving its performance on large-scale and complex analytical workloads. After these changes, its performance on the TPC-H workload exceeded the best published result by 40% at 30 TB.\nThe key enhancements to achieve this elite performance include adopting a pipeline execution model, a faster and more scalable inter-node data shuffle, exploiting a unified bus and unified remote memory access. We also expanded the support of cost-based Bloom filter placement and implemented several Bloom filter streaming strategies, enabling their use across nodes.",
+        "timestamp": "2026-09-02T22:14:43.976Z",
+        "rating": "novote",
+        "publishedDate": "2026/08/28",
+        "tags": [
+          "Databases (cs.DB)",
+          "Distributed",
+          "Parallel",
+          "and Cluster Computing (cs.DC)"
+        ],
+        "doi": "10.14778/3827998.3828014",
+        "journalName": "",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 26,
+        "object_id": "paper:arxiv.2608.28352",
+        "created_at": "2026-09-02T22:14:44+00:00",
+        "updated_at": "2026-09-02T22:15:03+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2608.31150": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2608.31150",
+        "url": "https://arxiv.org/abs/2608.31150",
+        "title": "Local Private Information Retrieval for Graph-Based Replicated Systems",
+        "authors": "Shreya Meel, Mohamed Nomeir, Sennur Ulukus",
+        "abstract": "We rethink the definition of privacy in multi-server, graph-replicated private information retrieval (PIR) systems, by introducing a novel setting where the user's privacy is governed by the servers' storage structure. In classical graph-replicated PIR, the user retrieves a single message stored at the servers, while hiding the message index from each server. In our proposed privacy setting, the user is concerned with hiding the message index from a particular server, only if that server stores the message being retrieved, and privacy is not imposed otherwise. We coin this relaxed privacy requirement as local user privacy and the resulting PIR problem as local PIR on the graph. Our focus is on two-replicated PIR systems, where every message is replicated twice and stored on two distinct servers. Specifically, we study local PIR systems where the storage is represented by simple graphs, i.e., every pair of vertices is associated with at most one edge, and by their multigraph extension, i.e., $r$ parallel edges replace every edge. For these settings, we establish bounds on the local PIR capacity, defined as the maximum number of message symbols retrieved, per downloaded symbol. The local privacy requirement yields significant capacity gain over the classical PIR capacity under the same storage structure. For instance, in settings where the graph is a disjoint union of multiple identical sub-graphs, the gain in the local PIR capacity over classical PIR capacity is multiplicative in the number of sub-graphs. Further, for connected graphs, we derive capacity lower bounds for edge-transitive and bipartite graphs, which are greater than the best-known PIR capacity bounds. From these and by establishing matching upper bounds, we exactly characterize the capacity for star graphs, cyclic graphs, and path graphs with odd number of vertices. We introduce two local PIR schemes for general graphs.",
+        "timestamp": "2026-09-02T22:14:37.309Z",
+        "rating": "novote",
+        "publishedDate": "2026/08/31",
+        "tags": [
+          "Information Theory (cs.IT)",
+          "Cryptography and Security (cs.CR)",
+          "Databases (cs.DB)",
+          "Networking and Internet Architecture (cs.NI)",
+          "Signal Processing (eess.SP)"
+        ],
+        "doi": "",
+        "journalName": "",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 25,
+        "object_id": "paper:arxiv.2608.31150",
+        "created_at": "2026-09-02T22:14:37+00:00",
+        "updated_at": "2026-09-02T22:14:56+00:00",
         "version": 1
       }
     }
