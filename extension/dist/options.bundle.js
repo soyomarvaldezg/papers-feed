@@ -54,6 +54,16 @@ const loguru = new LoguruMock();
 
 // config/session.ts
 const logger = loguru.getLogger('session-config');
+// Sane bounds for numeric settings; values outside these ranges are rejected
+// on save and fall back to defaults on load
+const NUMERIC_BOUNDS = {
+    idleThresholdMinutes: { min: 1, max: 60 },
+    minSessionDurationSeconds: { min: 1, max: 300 },
+    activityUpdateIntervalSeconds: { min: 1, max: 60 }
+};
+function isFiniteInBounds(value, min, max) {
+    return Number.isFinite(value) && value >= min && value <= max;
+}
 // Default configuration values
 const DEFAULT_CONFIG = {
     idleThresholdMinutes: 5,
@@ -68,7 +78,16 @@ const DEFAULT_CONFIG = {
 async function loadSessionConfig() {
     try {
         const items = await chrome.storage.sync.get('sessionConfig');
-        const config = { ...DEFAULT_CONFIG, ...items.sessionConfig };
+        const stored = (items.sessionConfig ?? {});
+        const config = {
+            idleThresholdMinutes: numericOr(stored.idleThresholdMinutes, DEFAULT_CONFIG.idleThresholdMinutes, NUMERIC_BOUNDS.idleThresholdMinutes.min, NUMERIC_BOUNDS.idleThresholdMinutes.max),
+            minSessionDurationSeconds: numericOr(stored.minSessionDurationSeconds, DEFAULT_CONFIG.minSessionDurationSeconds, NUMERIC_BOUNDS.minSessionDurationSeconds.min, NUMERIC_BOUNDS.minSessionDurationSeconds.max),
+            requireContinuousActivity: typeof stored.requireContinuousActivity === 'boolean'
+                ? stored.requireContinuousActivity : DEFAULT_CONFIG.requireContinuousActivity,
+            logPartialSessions: typeof stored.logPartialSessions === 'boolean'
+                ? stored.logPartialSessions : DEFAULT_CONFIG.logPartialSessions,
+            activityUpdateIntervalSeconds: numericOr(stored.activityUpdateIntervalSeconds, DEFAULT_CONFIG.activityUpdateIntervalSeconds, NUMERIC_BOUNDS.activityUpdateIntervalSeconds.min, NUMERIC_BOUNDS.activityUpdateIntervalSeconds.max)
+        };
         logger.debug('Loaded session config', config);
         return config;
     }
@@ -78,11 +97,18 @@ async function loadSessionConfig() {
     }
 }
 /**
+ * Coerce a stored value to a number within bounds, or fall back
+ */
+function numericOr(value, fallback, min, max) {
+    const num = Number(value);
+    return Number.isFinite(num) && num >= min && num <= max ? num : fallback;
+}
+/**
  * Save session configuration to storage
  */
 async function saveSessionConfig(config) {
     try {
-        // Ensure values are the correct type
+        // Ensure values are the correct type and within sane bounds
         const sanitizedConfig = {
             idleThresholdMinutes: Number(config.idleThresholdMinutes),
             minSessionDurationSeconds: Number(config.minSessionDurationSeconds),
@@ -90,6 +116,19 @@ async function saveSessionConfig(config) {
             logPartialSessions: Boolean(config.logPartialSessions),
             activityUpdateIntervalSeconds: Number(config.activityUpdateIntervalSeconds)
         };
+        const invalid = [];
+        if (!isFiniteInBounds(sanitizedConfig.idleThresholdMinutes, NUMERIC_BOUNDS.idleThresholdMinutes.min, NUMERIC_BOUNDS.idleThresholdMinutes.max)) {
+            invalid.push(`idleThresholdMinutes must be between ${NUMERIC_BOUNDS.idleThresholdMinutes.min} and ${NUMERIC_BOUNDS.idleThresholdMinutes.max} minutes`);
+        }
+        if (!isFiniteInBounds(sanitizedConfig.minSessionDurationSeconds, NUMERIC_BOUNDS.minSessionDurationSeconds.min, NUMERIC_BOUNDS.minSessionDurationSeconds.max)) {
+            invalid.push(`minSessionDurationSeconds must be between ${NUMERIC_BOUNDS.minSessionDurationSeconds.min} and ${NUMERIC_BOUNDS.minSessionDurationSeconds.max} seconds`);
+        }
+        if (!isFiniteInBounds(sanitizedConfig.activityUpdateIntervalSeconds, NUMERIC_BOUNDS.activityUpdateIntervalSeconds.min, NUMERIC_BOUNDS.activityUpdateIntervalSeconds.max)) {
+            invalid.push(`activityUpdateIntervalSeconds must be between ${NUMERIC_BOUNDS.activityUpdateIntervalSeconds.min} and ${NUMERIC_BOUNDS.activityUpdateIntervalSeconds.max} seconds`);
+        }
+        if (invalid.length > 0) {
+            throw new Error(`Invalid session settings: ${invalid.join('; ')}`);
+        }
         await chrome.storage.sync.set({ sessionConfig: sanitizedConfig });
         logger.debug('Saved session config', sanitizedConfig);
     }
@@ -154,18 +193,21 @@ function showStatus(message, isError = false) {
 // Validate settings before saving
 async function validateSettings(settings) {
     // Validate repository format
-    if (!/^[\w-]+\/[\w-]+$/.test(settings.githubRepo)) {
+    if (!/^[-\w]+\/[-\w]+$/.test(settings.githubRepo)) {
         throw new Error('Invalid repository format. Use username/repository');
     }
-    // Validate the token by making a test API call
-    const response = await fetch(`https://api.github.com/repos/${settings.githubRepo}`, {
-        headers: {
-            'Authorization': `token ${settings.githubToken}`,
-            'Accept': 'application/vnd.github.v3+json'
+    // Validate the token by making a test API call (skipped when the token
+    // field is left empty, which keeps the already-stored token)
+    if (settings.githubToken) {
+        const response = await fetch(`https://api.github.com/repos/${settings.githubRepo}`, {
+            headers: {
+                'Authorization': `token ${settings.githubToken}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Invalid token or repository. Please check your credentials.');
         }
-    });
-    if (!response.ok) {
-        throw new Error('Invalid token or repository. Please check your credentials.');
     }
     // Validate session settings
     const { sessionConfig } = settings;
@@ -178,18 +220,21 @@ async function validateSettings(settings) {
 }
 // Save settings
 async function saveSettings(settings) {
-    await chrome.storage.sync.set({
-        githubRepo: settings.githubRepo,
-        githubToken: settings.githubToken
-    });
+    // Credentials live in local storage (never sync: the PAT must not leave
+    // this device); an empty token field keeps the stored token
+    const credentials = { githubRepo: settings.githubRepo };
+    if (settings.githubToken) {
+        credentials.githubToken = settings.githubToken;
+    }
+    await chrome.storage.local.set(credentials);
     await saveSessionConfig(settings.sessionConfig);
 }
 // Initialize options page
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        // Load current settings
+        // Load current settings (credentials from local storage, never sync)
         const [storageItems, sessionConfig] = await Promise.all([
-            chrome.storage.sync.get(['githubRepo', 'githubToken']),
+            chrome.storage.local.get(['githubRepo', 'githubToken']),
             loadSessionConfig()
         ]);
         // Combine settings and display them

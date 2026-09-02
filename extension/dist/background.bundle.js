@@ -68,12 +68,12 @@ class LoguruMock {
 // Export singleton instance
 const loguru = new LoguruMock();
 
-const logger$8 = loguru.getLogger('paper-manager');
+const logger$9 = loguru.getLogger('paper-manager');
 class PaperManager {
     constructor(client, sourceManager) {
         this.client = client;
         this.sourceManager = sourceManager;
-        logger$8.debug('Paper manager initialized');
+        logger$9.debug('Paper manager initialized');
     }
     /**
      * Get paper by source and ID
@@ -101,7 +101,7 @@ class PaperManager {
         try {
             const obj = await this.client.getObject(objectId);
             const data = obj.data;
-            logger$8.debug(`Retrieved existing paper: ${paperIdentifier}`);
+            logger$9.debug(`Retrieved existing paper: ${paperIdentifier}`);
             return data;
         }
         catch (error) {
@@ -113,7 +113,7 @@ class PaperManager {
                     rating: paperData.rating || 'novote'
                 };
                 const newobj = await this.client.createObject(objectId, defaultPaperData);
-                logger$8.debug(`Created new paper: ${paperIdentifier}`);
+                logger$9.debug(`Created new paper: ${paperIdentifier}`);
                 // reopen to trigger metadata hydration
                 await this.client.fetchFromGitHub(`/issues/${newobj.meta.issueNumber}`, {
                     method: "PATCH",
@@ -146,7 +146,7 @@ class PaperManager {
                     interactions: []
                 };
                 await this.client.createObject(objectId, newLog);
-                logger$8.debug(`Created new interaction log: ${paperIdentifier}`);
+                logger$9.debug(`Created new interaction log: ${paperIdentifier}`);
                 return newLog;
             }
             throw error;
@@ -184,7 +184,7 @@ class PaperManager {
             data: session
         });
         const paperIdentifier = this.sourceManager.formatPaperId(sourceId, paperId);
-        logger$8.info(`Logged reading session for ${paperIdentifier}`, { duration: session.duration_seconds });
+        logger$9.info(`Logged reading session for ${paperIdentifier}`, { duration: session.duration_seconds });
     }
     /**
      * Log an annotation
@@ -212,7 +212,7 @@ class PaperManager {
             data: { key, value }
         });
         const paperIdentifier = this.sourceManager.formatPaperId(sourceId, paperId);
-        logger$8.info(`Logged annotation for ${paperIdentifier}`, { key });
+        logger$9.info(`Logged annotation for ${paperIdentifier}`, { key });
     }
     /**
      * Update paper rating
@@ -244,7 +244,7 @@ class PaperManager {
             data: { rating }
         });
         const paperIdentifier = this.sourceManager.formatPaperId(sourceId, paperId);
-        logger$8.info(`Updated rating for ${paperIdentifier} to ${rating}`);
+        logger$9.info(`Updated rating for ${paperIdentifier} to ${rating}`);
     }
     /**
      * Add interaction to log
@@ -257,26 +257,120 @@ class PaperManager {
     }
 }
 
+// config/session.ts
+const logger$8 = loguru.getLogger('session-config');
+// Sane bounds for numeric settings; values outside these ranges are rejected
+// on save and fall back to defaults on load
+const NUMERIC_BOUNDS = {
+    idleThresholdMinutes: { min: 1, max: 60 },
+    minSessionDurationSeconds: { min: 1, max: 300 },
+    activityUpdateIntervalSeconds: { min: 1, max: 60 }
+};
+// Default configuration values
+const DEFAULT_CONFIG = {
+    idleThresholdMinutes: 5,
+    minSessionDurationSeconds: 30,
+    requireContinuousActivity: true, // If true, resets timer on idle
+    logPartialSessions: false, // If true, logs sessions even if under minimum duration
+    activityUpdateIntervalSeconds: 1 // How often to update active time
+};
+/**
+ * Load session configuration from storage
+ */
+async function loadSessionConfig() {
+    try {
+        const items = await chrome.storage.sync.get('sessionConfig');
+        const stored = (items.sessionConfig ?? {});
+        const config = {
+            idleThresholdMinutes: numericOr(stored.idleThresholdMinutes, DEFAULT_CONFIG.idleThresholdMinutes, NUMERIC_BOUNDS.idleThresholdMinutes.min, NUMERIC_BOUNDS.idleThresholdMinutes.max),
+            minSessionDurationSeconds: numericOr(stored.minSessionDurationSeconds, DEFAULT_CONFIG.minSessionDurationSeconds, NUMERIC_BOUNDS.minSessionDurationSeconds.min, NUMERIC_BOUNDS.minSessionDurationSeconds.max),
+            requireContinuousActivity: typeof stored.requireContinuousActivity === 'boolean'
+                ? stored.requireContinuousActivity : DEFAULT_CONFIG.requireContinuousActivity,
+            logPartialSessions: typeof stored.logPartialSessions === 'boolean'
+                ? stored.logPartialSessions : DEFAULT_CONFIG.logPartialSessions,
+            activityUpdateIntervalSeconds: numericOr(stored.activityUpdateIntervalSeconds, DEFAULT_CONFIG.activityUpdateIntervalSeconds, NUMERIC_BOUNDS.activityUpdateIntervalSeconds.min, NUMERIC_BOUNDS.activityUpdateIntervalSeconds.max)
+        };
+        logger$8.debug('Loaded session config', config);
+        return config;
+    }
+    catch (error) {
+        logger$8.error('Error loading session config', error);
+        return DEFAULT_CONFIG;
+    }
+}
+/**
+ * Coerce a stored value to a number within bounds, or fall back
+ */
+function numericOr(value, fallback, min, max) {
+    const num = Number(value);
+    return Number.isFinite(num) && num >= min && num <= max ? num : fallback;
+}
+/**
+ * Convert configuration to milliseconds for internal use
+ */
+function getConfigurationInMs(config) {
+    return {
+        idleThreshold: config.idleThresholdMinutes * 60 * 1000,
+        minSessionDuration: config.minSessionDurationSeconds * 1000,
+        activityUpdateInterval: config.activityUpdateIntervalSeconds * 1000,
+        requireContinuousActivity: config.requireContinuousActivity,
+        logPartialSessions: config.logPartialSessions
+    };
+}
+
 // session-service.ts
 const logger$7 = loguru.getLogger('session-service');
-/**
- * Session tracking service for paper reading sessions
- *
- * Manages session state, heartbeats, and persistence
- * Designed for use in the background script (Service Worker)
- */
+// MV3 service workers are terminated after ~30s idle; session state is
+// checkpointed into chrome.storage.session on every heartbeat and restored
+// on worker startup so sessions survive worker restarts
+const CHECKPOINT_KEY = 'activeSessionCheckpoint';
+const PENDING_WRITES_KEY = 'pendingSessionWrites';
+// Bounds for the end-of-session write retry queue
+const MAX_WRITE_ATTEMPTS = 3;
+const MAX_QUEUE_SIZE = 50;
 class SessionService {
     /**
      * Create a new session service
      */
-    constructor(paperManager) {
+    constructor(paperManager, config) {
         this.paperManager = paperManager;
         this.activeSession = null;
         this.timeoutId = null;
         this.paperMetadata = new Map();
-        // Configuration
-        this.HEARTBEAT_TIMEOUT = 15000; // 15 seconds
+        // Bounded retry queue for end-of-session GitHub writes
+        this.pendingWrites = [];
+        this.flushing = false;
+        this.config = config ?? getConfigurationInMs(DEFAULT_CONFIG);
         logger$7.debug('Session service initialized');
+    }
+    /**
+     * Apply updated session configuration (idle threshold, min duration, etc.)
+     */
+    updateConfig(config) {
+        this.config = config;
+        if (this.activeSession) {
+            this.scheduleTimeoutCheck();
+        }
+        logger$7.debug('Session config updated', config);
+    }
+    /**
+     * Swap the paper manager used for session writes (credential changes).
+     * Keeping the same service instance preserves the active session, any
+     * checkpoint, and queued writes; a null manager just parks the queue.
+     */
+    setPaperManager(paperManager) {
+        this.paperManager = paperManager;
+        logger$7.debug('Paper manager updated', { hasManager: paperManager !== null });
+    }
+    // chrome.storage.session is only available to MV3 workers; without it we
+    // degrade to the previous in-memory behavior
+    getSessionStore() {
+        try {
+            return chrome.storage?.session ?? null;
+        }
+        catch {
+            return null;
+        }
     }
     /**
      * Start a new session for a paper
@@ -298,8 +392,10 @@ class SessionService {
             this.paperMetadata.set(key, metadata);
             logger$7.debug(`Stored metadata for ${key}`);
         }
-        // Start timeout check
+        // Start timeout check and checkpoint the new session so it can be
+        // restored if the service worker is terminated
         this.scheduleTimeoutCheck();
+        void this.persistCheckpoint();
         logger$7.info(`Started session for ${sourceId}:${paperId}`);
     }
     /**
@@ -313,10 +409,68 @@ class SessionService {
         this.activeSession.lastHeartbeatTime = new Date();
         // Reschedule timeout
         this.scheduleTimeoutCheck();
+        // Checkpoint after every heartbeat so the worker can be killed and
+        // restored at any point without losing session progress
+        void this.persistCheckpoint();
+        // Retry any queued end-of-session writes while the worker is alive
+        void this.flushPendingWrites();
         if (this.activeSession.heartbeatCount % 12 === 0) { // Log every minute (12 x 5sec heartbeats)
             logger$7.debug(`Session received ${this.activeSession.heartbeatCount} heartbeats`);
         }
         return true;
+    }
+    /**
+     * Restore checkpointed session state and queued writes after a worker restart.
+     * Must be awaited (or at least invoked) during worker startup.
+     */
+    async restorePersistedState() {
+        const store = this.getSessionStore();
+        if (!store)
+            return;
+        try {
+            const items = await store.get([CHECKPOINT_KEY, PENDING_WRITES_KEY]);
+            // Restore the write queue first so queued sessions are not lost
+            const pending = items[PENDING_WRITES_KEY];
+            if (Array.isArray(pending)) {
+                for (const entry of pending) {
+                    if (this.isValidPendingWrite(entry) && this.pendingWrites.length < MAX_QUEUE_SIZE) {
+                        this.pendingWrites.push(entry);
+                    }
+                }
+                if (this.pendingWrites.length > 0) {
+                    logger$7.info(`Restored ${this.pendingWrites.length} pending session write(s)`);
+                }
+            }
+            const checkpoint = items[CHECKPOINT_KEY];
+            if (this.isValidCheckpoint(checkpoint)) {
+                const lastHeartbeatTime = new Date(checkpoint.lastHeartbeatTime);
+                this.activeSession = {
+                    sourceId: checkpoint.sourceId,
+                    paperId: checkpoint.paperId,
+                    startTime: new Date(checkpoint.startTime),
+                    heartbeatCount: checkpoint.heartbeatCount,
+                    lastHeartbeatTime
+                };
+                if (checkpoint.metadata) {
+                    this.paperMetadata.set(`${checkpoint.sourceId}:${checkpoint.paperId}`, checkpoint.metadata);
+                }
+                logger$7.info(`Restored session for ${checkpoint.sourceId}:${checkpoint.paperId}`, {
+                    heartbeatCount: checkpoint.heartbeatCount
+                });
+                // Heartbeats stopped while the worker was down: finalize the session
+                // if the silence exceeds the idle threshold, otherwise keep it alive
+                if (Date.now() - lastHeartbeatTime.getTime() > this.config.idleThreshold) {
+                    this.checkTimeout();
+                }
+                else {
+                    this.scheduleTimeoutCheck();
+                }
+            }
+            void this.flushPendingWrites();
+        }
+        catch (error) {
+            logger$7.error('Failed to restore session state', error);
+        }
     }
     /**
      * Schedule a check for heartbeat timeout
@@ -326,10 +480,10 @@ class SessionService {
         if (this.timeoutId !== null) {
             clearTimeout(this.timeoutId);
         }
-        // Set new timeout
+        // Set new timeout based on the configured idle threshold
         this.timeoutId = self.setTimeout(() => {
             this.checkTimeout();
-        }, this.HEARTBEAT_TIMEOUT);
+        }, this.config.idleThreshold);
     }
     /**
      * Check if the session has timed out due to missing heartbeats
@@ -339,13 +493,28 @@ class SessionService {
             return;
         const now = Date.now();
         const lastTime = this.activeSession.lastHeartbeatTime.getTime();
-        if ((now - lastTime) > this.HEARTBEAT_TIMEOUT) {
-            logger$7.info('Session timeout detected');
-            this.endSession();
+        if ((now - lastTime) > this.config.idleThreshold) {
+            if (this.config.requireContinuousActivity) {
+                logger$7.info('Session timeout detected');
+                this.endSession();
+            }
+            else {
+                // Continuous activity not required: keep the session alive across
+                // idle gaps and keep checking
+                this.scheduleTimeoutCheck();
+            }
         }
         else {
             this.scheduleTimeoutCheck();
         }
+    }
+    /**
+     * Whether a finished session is long enough to be logged, honoring the
+     * configured minimum duration and partial-session flag
+     */
+    shouldLogSession(sessionData) {
+        return sessionData.duration_seconds * 1000 >= this.config.minSessionDuration ||
+            this.config.logPartialSessions;
     }
     /**
      * End the current session and get the data
@@ -380,11 +549,12 @@ class SessionService {
             idle_seconds: idleSeconds,
             total_elapsed_seconds: totalElapsedSeconds
         };
-        // Store session if it was meaningful and we have a paper manager
-        if (this.paperManager && heartbeatCount > 0) {
+        // Queue the session for storage if it was meaningful and we have a
+        // paper manager; the bounded retry queue protects the write from the
+        // worker dying mid-request
+        if (this.paperManager && heartbeatCount > 0 && this.shouldLogSession(sessionData)) {
             const metadata = this.getPaperMetadata(sourceId, paperId);
-            this.paperManager.logReadingSession(sourceId, paperId, sessionData, metadata)
-                .catch(err => logger$7.error('Failed to store session', err));
+            this.queueSessionWrite(sourceId, paperId, sessionData, metadata);
         }
         logger$7.info(`Ended session for ${sourceId}:${paperId}`, {
             duration,
@@ -392,7 +562,123 @@ class SessionService {
         });
         // Clear active session
         this.activeSession = null;
+        void this.clearCheckpoint();
         return sessionData;
+    }
+    /**
+     * Add an end-of-session write to the bounded retry queue
+     */
+    queueSessionWrite(sourceId, paperId, sessionData, metadata) {
+        if (this.pendingWrites.length >= MAX_QUEUE_SIZE) {
+            logger$7.warning('Pending session write queue full, dropping oldest entry');
+            this.pendingWrites.shift();
+        }
+        this.pendingWrites.push({ sourceId, paperId, session: sessionData, metadata, attempts: 0 });
+        void this.persistPendingWrites();
+        void this.flushPendingWrites();
+    }
+    /**
+     * Attempt to deliver queued session writes; failures stay queued up to
+     * MAX_WRITE_ATTEMPTS and are retried on the next heartbeat or worker start
+     */
+    async flushPendingWrites() {
+        if (this.flushing || !this.paperManager)
+            return;
+        this.flushing = true;
+        try {
+            while (this.pendingWrites.length > 0) {
+                const entry = this.pendingWrites[0];
+                try {
+                    await this.paperManager.logReadingSession(entry.sourceId, entry.paperId, entry.session, entry.metadata);
+                    this.pendingWrites.shift();
+                    await this.persistPendingWrites();
+                }
+                catch (error) {
+                    entry.attempts++;
+                    logger$7.error(`Failed to store session for ${entry.sourceId}:${entry.paperId} (attempt ${entry.attempts}/${MAX_WRITE_ATTEMPTS})`, error);
+                    if (entry.attempts >= MAX_WRITE_ATTEMPTS) {
+                        this.pendingWrites.shift();
+                        await this.persistPendingWrites();
+                    }
+                    break;
+                }
+            }
+        }
+        finally {
+            this.flushing = false;
+        }
+    }
+    /**
+     * Mirror the write queue into chrome.storage.session so it survives
+     * service worker restarts
+     */
+    async persistPendingWrites() {
+        const store = this.getSessionStore();
+        if (!store)
+            return;
+        try {
+            await store.set({ [PENDING_WRITES_KEY]: this.pendingWrites });
+        }
+        catch (error) {
+            logger$7.error('Failed to persist pending session writes', error);
+        }
+    }
+    /**
+     * Checkpoint the active session into chrome.storage.session so it can be
+     * restored after the MV3 worker is killed
+     */
+    async persistCheckpoint() {
+        const store = this.getSessionStore();
+        if (!store || !this.activeSession)
+            return;
+        const checkpoint = {
+            sourceId: this.activeSession.sourceId,
+            paperId: this.activeSession.paperId,
+            startTime: this.activeSession.startTime.toISOString(),
+            heartbeatCount: this.activeSession.heartbeatCount,
+            lastHeartbeatTime: this.activeSession.lastHeartbeatTime.toISOString(),
+            metadata: this.getPaperMetadata(this.activeSession.sourceId, this.activeSession.paperId)
+        };
+        try {
+            await store.set({ [CHECKPOINT_KEY]: checkpoint });
+        }
+        catch (error) {
+            logger$7.error('Failed to persist session checkpoint', error);
+        }
+    }
+    async clearCheckpoint() {
+        const store = this.getSessionStore();
+        if (!store)
+            return;
+        try {
+            await store.remove(CHECKPOINT_KEY);
+        }
+        catch (error) {
+            logger$7.error('Failed to clear session checkpoint', error);
+        }
+    }
+    isValidCheckpoint(value) {
+        if (typeof value !== 'object' || value === null)
+            return false;
+        const checkpoint = value;
+        return (typeof checkpoint.sourceId === 'string' && checkpoint.sourceId.length > 0 &&
+            typeof checkpoint.paperId === 'string' && checkpoint.paperId.length > 0 &&
+            typeof checkpoint.heartbeatCount === 'number' && Number.isFinite(checkpoint.heartbeatCount) &&
+            checkpoint.heartbeatCount >= 0 &&
+            typeof checkpoint.startTime === 'string' && !Number.isNaN(new Date(checkpoint.startTime).getTime()) &&
+            typeof checkpoint.lastHeartbeatTime === 'string' &&
+            !Number.isNaN(new Date(checkpoint.lastHeartbeatTime).getTime()));
+    }
+    isValidPendingWrite(value) {
+        if (typeof value !== 'object' || value === null)
+            return false;
+        const entry = value;
+        return (typeof entry.sourceId === 'string' &&
+            typeof entry.paperId === 'string' &&
+            typeof entry.attempts === 'number' &&
+            entry.attempts < MAX_WRITE_ATTEMPTS &&
+            typeof entry.session === 'object' && entry.session !== null &&
+            typeof entry.session.session_id === 'string');
     }
     /**
      * Check if a session is currently active
@@ -899,17 +1185,46 @@ class BaseSourceIntegration {
         // Default properties - set for generic web pages
         this.id = 'url';
         this.name = 'Web Page';
-        this.urlPatterns = [
-            /^https?:\/\/(?!.*\.pdf($|\?|#)).*$/i // Match HTTP/HTTPS URLs that aren't PDFs
-        ];
+        // Hostnames this integration accepts (exact match or subdomain).
+        // Must be declared per source; an empty list means no URLs are accepted.
+        this.allowedHosts = [];
+        // Path patterns for paper URLs, anchored to the parsed URL's pathname
+        this.urlPatterns = [];
         this.contentScriptMatches = [];
     }
     /**
+     * Parse a URL and reject anything that is not a well-formed http(s) URL
+     * Shared entry point for URL validation across source integrations
+     */
+    parseHttpUrl(url) {
+        try {
+            const parsed = new URL(url);
+            if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+                return null;
+            }
+            return parsed;
+        }
+        catch {
+            return null;
+        }
+    }
+    /**
+     * Check a lowercase hostname against the allowlist (subdomains included)
+     */
+    isAllowedHost(hostname) {
+        return this.allowedHosts.some(allowed => hostname === allowed || hostname.endsWith(`.${allowed}`));
+    }
+    /**
      * Check if this integration can handle the given URL
-     * Default implementation checks against urlPatterns
+     * Only well-formed http(s) URLs on explicitly allowed hosts match
      */
     canHandleUrl(url) {
-        return this.urlPatterns.some(pattern => pattern.test(url));
+        const parsed = this.parseHttpUrl(url);
+        if (!parsed) {
+            return false;
+        }
+        return this.isAllowedHost(parsed.hostname.toLowerCase()) &&
+            this.urlPatterns.some(pattern => pattern.test(parsed.pathname));
     }
     /**
      * Extract paper ID from URL
@@ -1099,10 +1414,13 @@ class ArXivIntegration extends BaseSourceIntegration {
         super(...arguments);
         this.id = 'arxiv';
         this.name = 'arXiv.org';
-        // URL patterns for papers
+        // Host allowlist: only well-formed http(s) URLs on arxiv.org are accepted
+        this.allowedHosts = ['arxiv.org'];
+        // Path patterns for papers, anchored to the parsed URL's pathname
+        // (previously matched anywhere in the URL, which was spoofable)
         this.urlPatterns = [
-            /arxiv\.org\/(abs|pdf|html)\/([0-9.]+)/,
-            /arxiv\.org\/\w+\/([0-9.]+)/
+            /^\/(abs|pdf|html)\/([0-9.]+)/,
+            /^\/\w+\/([0-9.]+)/
         ];
         // Content script matches
         // readonly contentScriptMatches = [
@@ -1115,8 +1433,12 @@ class ArXivIntegration extends BaseSourceIntegration {
      * Extract paper ID from URL
      */
     extractPaperId(url) {
+        const parsed = this.parseHttpUrl(url);
+        if (!parsed || !this.isAllowedHost(parsed.hostname.toLowerCase())) {
+            return null;
+        }
         for (const pattern of this.urlPatterns) {
-            const match = url.match(pattern);
+            const match = parsed.pathname.match(pattern);
             if (match) {
                 return match[2] || match[1]; // The capture group with the paper ID
             }
@@ -1328,23 +1650,28 @@ class OpenReviewIntegration extends BaseSourceIntegration {
         super(...arguments);
         this.id = 'openreview';
         this.name = 'OpenReview';
-        // URL patterns for papers
+        // Host allowlist: only well-formed http(s) URLs on openreview.net match
+        this.allowedHosts = ['openreview.net'];
+        // Path patterns for papers, anchored to the parsed URL's pathname; the
+        // paper id travels in the query string (forum?id=...)
         this.urlPatterns = [
-            /openreview\.net\/forum\?id=([a-zA-Z0-9]+)/,
-            /openreview\.net\/pdf\?id=([a-zA-Z0-9]+)/
+            /^\/forum$/,
+            /^\/pdf$/
         ];
     }
     /**
      * Extract paper ID from URL
      */
     extractPaperId(url) {
-        for (const pattern of this.urlPatterns) {
-            const match = url.match(pattern);
-            if (match) {
-                return match[1]; // The capture group with the paper ID
-            }
+        const parsed = this.parseHttpUrl(url);
+        if (!parsed || !this.isAllowedHost(parsed.hostname.toLowerCase())) {
+            return null;
         }
-        return null;
+        if (!this.urlPatterns.some(pattern => pattern.test(parsed.pathname))) {
+            return null;
+        }
+        const id = parsed.searchParams.get('id');
+        return id && /^[a-zA-Z0-9]+$/.test(id) ? id : null;
     }
     /**
      * Create a custom metadata extractor for OpenReview
@@ -1445,16 +1772,23 @@ class NatureIntegration extends BaseSourceIntegration {
         super(...arguments);
         this.id = 'nature';
         this.name = 'Nature';
-        // URL pattern for Nature articles with capture group for ID
+        // Host allowlist: only well-formed http(s) URLs on nature.com match
+        this.allowedHosts = ['nature.com'];
+        // Path pattern for articles, anchored to the parsed URL's pathname with a
+        // capture group for the ID
         this.urlPatterns = [
-            /nature\.com\/articles\/([^?]+)/,
+            /^\/articles\/([^/?#]+)/,
         ];
     }
     /**
      * Extract paper ID from URL
      */
     extractPaperId(url) {
-        const match = url.match(this.urlPatterns[0]);
+        const parsed = this.parseHttpUrl(url);
+        if (!parsed || !this.isAllowedHost(parsed.hostname.toLowerCase())) {
+            return null;
+        }
+        const match = parsed.pathname.match(this.urlPatterns[0]);
         return match ? match[1] : null;
     }
     /**
@@ -1473,13 +1807,20 @@ class PnasIntegration extends BaseSourceIntegration {
         super(...arguments);
         this.id = 'pnas';
         this.name = 'PNAS';
+        // Host allowlist: only well-formed http(s) URLs on pnas.org match
+        this.allowedHosts = ['pnas.org'];
+        // Path pattern for articles, anchored to the parsed URL's pathname
         this.urlPatterns = [
-            /pnas\.org\/doi\/10\.1073\/pnas\.([0-9]+)/
+            /^\/doi\/10\.1073\/pnas\.([0-9]+)/
         ];
     }
-    // upstream BaseSourceIntegration.extractPaperId should default to this behavior when able
+    // Extract the numeric PNAS id from the anchored pathname
     extractPaperId(url) {
-        const match = url.match(this.urlPatterns[0]);
+        const parsed = this.parseHttpUrl(url);
+        if (!parsed || !this.isAllowedHost(parsed.hostname.toLowerCase())) {
+            return null;
+        }
+        const match = parsed.pathname.match(this.urlPatterns[0]);
         return match ? match[1] : null;
     }
 }
@@ -1537,9 +1878,63 @@ class MiscIntegration extends BaseSourceIntegration {
             "/doi/",
             "/pdf/",
         ];
+        // Host allowlist derived from the substring patterns above. Each entry
+        // pins the pattern to an explicit host (subdomains included) and, where
+        // the original pattern had a meaningful path, an anchored path prefix.
+        // The bare "/doi/" and "/pdf/" substrings were dropped: they matched any
+        // host and could be spoofed via query strings; every publisher they
+        // covered is listed explicitly here.
+        this.trackedHosts = [
+            { host: 'sciencedirect.com', pathPrefix: '/science/article/' },
+            { host: 'philpapers.org', pathPrefix: '/rec/' },
+            { host: 'proceedings.neurips.cc', pathPrefix: '/paper_files/paper/' },
+            { host: 'journals.sagepub.com', pathPrefix: '/doi/' },
+            { host: 'link.springer.com', pathPrefix: '/article/' },
+            { host: 'science.org', pathPrefix: '/doi/' },
+            { host: 'journals.aps.org', pathPrefix: '/prx/abstract/' },
+            { host: 'onlinelibrary.wiley.com', pathPrefix: '/doi/' },
+            { host: 'physoc.onlinelibrary.wiley.com', pathPrefix: '/doi/full/' },
+            { host: 'cell.com', pathPrefix: '/trends/cognitive-sciences/fulltext/' },
+            { host: 'researchgate.net', pathPrefix: '/publication/' },
+            { host: 'psycnet.apa.org', pathPrefix: '/record/' },
+            { host: 'biorxiv.org', pathPrefix: '/content/' },
+            { host: 'osf.io', pathPrefix: '/preprints/' },
+            { host: 'frontiersin.org', pathPrefix: '/journals/' },
+            { host: 'jstor.org' },
+            { host: 'proceedings.mlr.press' },
+            { host: 'journals.plos.org', pathPrefix: '/plosone/article' },
+            { host: 'ieeexplore.ieee.org', pathPrefix: '/document/' },
+            { host: 'royalsocietypublishing.org', pathPrefix: '/doi/' },
+            { host: 'papers.nips.cc', pathPrefix: '/paper_files/paper/' },
+            { host: 'philarchive.org', pathPrefix: '/archive/' },
+            { host: 'tandfonline.com', pathPrefix: '/doi/' },
+            { host: 'iopscience.iop.org', pathPrefix: '/article/' },
+            { host: 'academic.oup.com', pathPrefix: '/brain/article/' },
+            { host: 'elifesciences.org', pathPrefix: '/articles/' },
+            { host: 'escholarship.org', pathPrefix: '/content/' },
+            { host: 'pmc.ncbi.nlm.nih.gov', pathPrefix: '/articles/' },
+            { host: 'pubmed.ncbi.nlm.nih.gov' },
+            { host: 'openaccess.thecvf.com', pathPrefix: '/content/' },
+            { host: 'zenodo.org', pathPrefix: '/records/' },
+            { host: 'journals.asm.org', pathPrefix: '/doi/full/' },
+            { host: 'storage.courtlistener.com', pathPrefix: '/recap/' },
+            { host: 'bmj.com', pathPrefix: '/content/' },
+            { host: 'ntsb.gov', pathPrefix: '/investigations/' },
+            { host: 'aclanthology.org' },
+            { host: 'journals.ametsoc.org', pathPrefix: '/view/journals/' },
+            { host: 'substack.com', pathPrefix: '/p/' },
+            { host: 'citeseerx.ist.psu.edu' },
+        ];
     }
     canHandleUrl(url) {
-        return this.contentScriptMatches.some(pattern => url.includes(pattern));
+        const parsed = this.parseHttpUrl(url);
+        if (!parsed) {
+            return false;
+        }
+        const hostname = parsed.hostname.toLowerCase();
+        const pathname = parsed.pathname;
+        return this.trackedHosts.some(entry => (hostname === entry.host || hostname.endsWith(`.${entry.host}`)) &&
+            (!entry.pathPrefix || pathname.startsWith(entry.pathPrefix)));
     }
 }
 const miscIntegration = new MiscIntegration();
@@ -1555,6 +1950,7 @@ const sourceIntegrations = [
 
 // background.ts
 const logger = loguru.getLogger('background');
+const DEV_BUILD = true === true;
 // Global state
 let githubToken = '';
 let githubRepo = '';
@@ -1562,6 +1958,13 @@ let paperManager = null;
 let sessionService = null;
 let popupManager = null;
 let sourceManager = null;
+// Message validation limits and allowlists
+const MAX_STRING_LENGTH = 10000;
+const MAX_ID_LENGTH = 512;
+const MAX_REASON_LENGTH = 200;
+const MAX_TAG_COUNT = 50;
+const MAX_TAG_LENGTH = 100;
+const VALID_RATINGS = ['novote', 'thumbsup', 'thumbsdown'];
 // Initialize sources
 function initializeSources() {
     sourceManager = new SourceIntegrationManager();
@@ -1577,10 +1980,30 @@ async function initialize() {
     try {
         // Initialize sources first
         initializeSources();
-        // Load GitHub credentials
-        const items = await chrome.storage.sync.get(['githubToken', 'githubRepo']);
-        githubToken = items.githubToken || '';
-        githubRepo = items.githubRepo || '';
+        // Load GitHub credentials from local storage (never sync: the PAT must
+        // not leave this device)
+        const items = await chrome.storage.local.get(['githubToken', 'githubRepo']);
+        githubToken = typeof items.githubToken === 'string' ? items.githubToken : '';
+        githubRepo = typeof items.githubRepo === 'string' ? items.githubRepo : '';
+        // One-time migration: credentials saved by older versions live in sync
+        // storage; move them to local and scrub sync so the PAT stops syncing
+        const syncItems = await chrome.storage.sync.get(['githubToken', 'githubRepo']);
+        const legacyToken = typeof syncItems.githubToken === 'string' ? syncItems.githubToken : '';
+        const legacyRepo = typeof syncItems.githubRepo === 'string' ? syncItems.githubRepo : '';
+        if ((legacyToken || legacyRepo) && (!githubToken || !githubRepo)) {
+            const migrated = {};
+            if (!githubToken && legacyToken)
+                migrated.githubToken = legacyToken;
+            if (!githubRepo && legacyRepo)
+                migrated.githubRepo = legacyRepo;
+            if (Object.keys(migrated).length > 0) {
+                await chrome.storage.local.set(migrated);
+                githubToken = migrated.githubToken ?? githubToken;
+                githubRepo = migrated.githubRepo ?? githubRepo;
+            }
+            await chrome.storage.sync.remove(['githubToken', 'githubRepo']);
+            logger.info('Migrated GitHub credentials from sync to local storage');
+        }
         logger.info('Credentials loaded', { hasToken: !!githubToken, hasRepo: !!githubRepo });
         // Initialize paper manager if we have credentials
         if (githubToken && githubRepo) {
@@ -1595,199 +2018,332 @@ async function initialize() {
             // Initialize session service without paper manager
             sessionService = new SessionService(null);
         }
+        // Apply user-configured session settings and restore any session that
+        // was checkpointed before the service worker was terminated
+        await applySessionConfig();
+        await sessionService.restorePersistedState();
         logger.info('Session service initialized');
         // Initialize popup manager
         popupManager = new PopupManager(() => sourceManager, () => paperManager);
         logger.info('Popup manager initialized');
         // Set up message listeners
         setupMessageListeners();
-        // Initialize debug objects
-        initializeDebugObjects();
+        // Initialize debug objects (development builds only)
+        if (DEV_BUILD) {
+            initializeDebugObjects();
+        }
     }
     catch (error) {
         logger.error('Initialization error', error);
     }
 }
-// Set up message listeners
-function setupMessageListeners() {
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-        if (message.type === 'contentScriptReady' && sender.tab?.id) {
-            logger.debug('Content script ready:', sender.tab.url);
-            sendResponse({ success: true });
-            return true;
-        }
-        if (message.type === 'paperMetadata' && message.metadata) {
-            // Store metadata received from content script
-            handlePaperMetadata(message.metadata);
-            sendResponse({ success: true });
-            return true;
-        }
-        if (message.type === 'getCurrentPaper') {
-            const session = sessionService?.getCurrentSession();
-            const paperMetadata = session
-                ? sessionService?.getPaperMetadata(session.sourceId, session.paperId)
-                : null;
-            logger.debug('Popup requested current paper', paperMetadata);
-            sendResponse(paperMetadata);
-            return true;
-        }
-        if (message.type === 'updateRating') {
-            logger.debug('Rating update requested:', message.rating);
-            handleUpdateRating(message.rating, sendResponse);
-            return true; // Will respond asynchronously
-        }
-        if (message.type === 'startSession') {
-            handleStartSession(message.sourceId, message.paperId);
-            sendResponse({ success: true });
-            return true;
-        }
-        if (message.type === 'sessionHeartbeat') {
-            handleSessionHeartbeat();
-            sendResponse({ success: true });
-            return true;
-        }
-        if (message.type === 'endSession') {
-            handleEndSession(message.reason || 'user_action');
-            sendResponse({ success: true });
-            return true;
-        }
-        // New handler for manual paper logging from popup
-        if (message.type === 'manualPaperLog' && message.metadata) {
-            handleManualPaperLog(message.metadata)
-                .then(() => sendResponse({ success: true }))
-                .catch(error => {
-                logger.error('Error handling manual paper log', error);
-                sendResponse({
-                    success: false,
-                    error: error instanceof Error ? error.message : 'Unknown error'
-                });
-            });
-            return true; // Will respond asynchronously
-        }
-        // Other message handlers are managed by PopupManager
-        return false; // Not handled
-    });
-}
-// Handle paper metadata from content script
-async function handlePaperMetadata(metadata) {
-    logger.info(`Received metadata for ${metadata.sourceId}:${metadata.paperId}`);
+// Load the saved session configuration and hand it to the session service
+async function applySessionConfig() {
     try {
-        // Store metadata in session service
-        if (sessionService) {
-            sessionService.storePaperMetadata(metadata);
-        }
-        // Store in GitHub if we have a paper manager
-        if (paperManager) {
-            await paperManager.getOrCreatePaper(metadata);
-            logger.debug('Paper metadata stored in GitHub');
-        }
+        const rawConfig = await loadSessionConfig();
+        sessionService?.updateConfig(getConfigurationInMs(rawConfig));
     }
     catch (error) {
-        logger.error('Error handling paper metadata', error);
+        logger.error('Failed to apply session config', error);
     }
 }
+// Set up message listeners
+function setupMessageListeners() {
+    chrome.runtime.onMessage.addListener((raw, sender, sendResponse) => {
+        const parsed = parseRuntimeMessage(raw);
+        // popupAction / showAnnotationPopup / showPopup are handled by PopupManager
+        if (parsed.kind === 'unrecognized') {
+            return false; // Not handled
+        }
+        if (parsed.kind === 'invalid') {
+            logger.warning('Rejected malformed runtime message', parsed.error);
+            sendResponse({ success: false, error: parsed.error });
+            return true;
+        }
+        switch (parsed.kind) {
+            case 'contentScriptReady': {
+                if (!sender.tab?.id) {
+                    return false;
+                }
+                logger.debug('Content script ready:', sender.tab.url);
+                sendResponse({ success: true });
+                return true;
+            }
+            case 'paperMetadata': {
+                handlePaperLog(parsed.metadata, `Received metadata for ${parsed.metadata.sourceId}:${parsed.metadata.paperId}`)
+                    .then(response => sendResponse(response))
+                    .catch(error => sendResponse(toErrorResponse(error)));
+                return true; // Will respond asynchronously
+            }
+            case 'getCurrentPaper': {
+                const session = sessionService?.getCurrentSession();
+                const paperMetadata = session
+                    ? sessionService?.getPaperMetadata(session.sourceId, session.paperId)
+                    : null;
+                logger.debug('Popup requested current paper', paperMetadata);
+                sendResponse(paperMetadata ?? null);
+                return true;
+            }
+            case 'updateRating': {
+                handleUpdateRating(parsed.rating)
+                    .then(response => sendResponse(response))
+                    .catch(error => sendResponse(toErrorResponse(error)));
+                return true; // Will respond asynchronously
+            }
+            case 'startSession': {
+                sendResponse(handleStartSession(parsed.sourceId, parsed.paperId));
+                return true;
+            }
+            case 'sessionHeartbeat': {
+                if (!sessionService) {
+                    sendResponse({ success: false, error: 'Services not initialized' });
+                    return true;
+                }
+                // Only heartbeats matching the active session count; others come
+                // from tabs whose session was superseded
+                const active = sessionService.getCurrentSession();
+                const ownsSession = active !== null &&
+                    active.sourceId === parsed.sourceId &&
+                    active.paperId === parsed.paperId;
+                sendResponse(ownsSession && sessionService.recordHeartbeat()
+                    ? { success: true }
+                    : { success: false, error: 'No active session' });
+                return true;
+            }
+            case 'endSession': {
+                sendResponse(handleEndSession(parsed.sourceId, parsed.paperId, parsed.reason));
+                return true;
+            }
+            case 'manualPaperLog': {
+                handlePaperLog(parsed.metadata, 'manual paper log')
+                    .then(response => sendResponse(response))
+                    .catch(error => sendResponse(toErrorResponse(error)));
+                return true; // Will respond asynchronously
+            }
+        }
+    });
+}
+function toErrorResponse(error) {
+    return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+    };
+}
+function isRecord(value) {
+    return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+// Plain string within the message size cap
+function isBoundedString(value, maxLength = MAX_STRING_LENGTH) {
+    return typeof value === 'string' && value.length > 0 && value.length <= maxLength;
+}
+// Non-empty string within the message size cap
+function isValidId(value) {
+    return typeof value === 'string' && value.length > 0 &&
+        value.length <= MAX_ID_LENGTH && /^[A-Za-z0-9._~-]+$/.test(value);
+}
+function isValidRating(value) {
+    return typeof value === 'string' && VALID_RATINGS.includes(value);
+}
+// Identifiers feed storage object IDs (sourceId.paperId) and metadata keys
+// (sourceId:paperId), so the charset is kept separator-free. No registry
+// check here: the 'url' fallback source is intentionally not registered in
+// the background but still produces valid sessions from content scripts.
+function resolveSourceAndPaper(sourceId, paperId) {
+    if (!isValidId(sourceId) || !isValidId(paperId)) {
+        return null;
+    }
+    return { sourceId, paperId };
+}
+function parseRuntimeMessage(raw) {
+    if (!isRecord(raw) || typeof raw.type !== 'string') {
+        return { kind: 'unrecognized' };
+    }
+    switch (raw.type) {
+        case 'contentScriptReady':
+            return isBoundedString(raw.url)
+                ? { kind: 'contentScriptReady' }
+                : { kind: 'invalid', error: 'Invalid contentScriptReady message' };
+        case 'paperMetadata': {
+            const metadata = sanitizePaperMetadata(raw.metadata);
+            return metadata
+                ? { kind: 'paperMetadata', metadata }
+                : { kind: 'invalid', error: 'Invalid paper metadata' };
+        }
+        case 'getCurrentPaper':
+            return { kind: 'getCurrentPaper' };
+        case 'updateRating': {
+            if (!isValidRating(raw.rating)) {
+                return { kind: 'invalid', error: 'Invalid rating value' };
+            }
+            return { kind: 'updateRating', rating: raw.rating };
+        }
+        case 'startSession': {
+            const ids = resolveSourceAndPaper(raw.sourceId, raw.paperId);
+            return ids ? { kind: 'startSession', ...ids } : { kind: 'invalid', error: 'Invalid sourceId or paperId' };
+        }
+        case 'sessionHeartbeat': {
+            const ids = resolveSourceAndPaper(raw.sourceId, raw.paperId);
+            if (!ids || typeof raw.timestamp !== 'number' || !Number.isFinite(raw.timestamp)) {
+                return { kind: 'invalid', error: 'Invalid sessionHeartbeat message' };
+            }
+            return { kind: 'sessionHeartbeat', ...ids, timestamp: raw.timestamp };
+        }
+        case 'endSession': {
+            const ids = resolveSourceAndPaper(raw.sourceId, raw.paperId);
+            if (!ids) {
+                return { kind: 'invalid', error: 'Invalid endSession message' };
+            }
+            const reason = isBoundedString(raw.reason, MAX_REASON_LENGTH) ? raw.reason : 'user_action';
+            return { kind: 'endSession', ...ids, reason };
+        }
+        case 'manualPaperLog': {
+            const metadata = sanitizePaperMetadata(raw.metadata);
+            return metadata
+                ? { kind: 'manualPaperLog', metadata }
+                : { kind: 'invalid', error: 'Invalid paper metadata' };
+        }
+        default:
+            return { kind: 'unrecognized' };
+    }
+}
+// Required text field, kept within the message size cap
+function textOr(value, fallback, maxLength = MAX_STRING_LENGTH) {
+    return isBoundedString(value, maxLength) || (typeof value === 'string' && value.length === 0)
+        ? value
+        : fallback;
+}
+// Optional text field: present only when a bounded non-empty string
+function optionalText(value, maxLength = MAX_STRING_LENGTH) {
+    return isBoundedString(value, maxLength) ? value : undefined;
+}
+// Rebuild untrusted metadata into a well-formed PaperMetadata so unknown
+// fields are dropped instead of persisted to GitHub
+function sanitizePaperMetadata(value) {
+    if (!isRecord(value)) {
+        return null;
+    }
+    if (!isValidId(value.sourceId) || !isValidId(value.paperId) || !isBoundedString(value.url)) {
+        return null;
+    }
+    const tags = Array.isArray(value.tags)
+        ? value.tags
+            .filter((tag) => isBoundedString(tag, MAX_TAG_LENGTH))
+            .slice(0, MAX_TAG_COUNT)
+        : [];
+    const metadata = {
+        sourceId: value.sourceId,
+        paperId: value.paperId,
+        url: value.url,
+        title: textOr(value.title, ''),
+        authors: textOr(value.authors, ''),
+        abstract: textOr(value.abstract, ''),
+        timestamp: textOr(value.timestamp, new Date().toISOString()),
+        publishedDate: textOr(value.publishedDate, ''),
+        tags,
+        rating: isValidRating(value.rating) ? value.rating : 'novote'
+    };
+    const doi = optionalText(value.doi, MAX_ID_LENGTH);
+    if (doi) {
+        metadata.doi = doi;
+    }
+    const journalName = optionalText(value.journalName);
+    if (journalName) {
+        metadata.journalName = journalName;
+    }
+    const sourceType = optionalText(value.sourceType, MAX_ID_LENGTH);
+    if (sourceType) {
+        metadata.sourceType = sourceType;
+    }
+    return metadata;
+}
+// Handle paper metadata received from a content script
+async function handlePaperLog(metadata, context) {
+    logger.info(`${context}: ${metadata.sourceId}:${metadata.paperId}`);
+    if (sessionService) {
+        sessionService.storePaperMetadata(metadata);
+    }
+    if (paperManager) {
+        await paperManager.getOrCreatePaper(metadata);
+        logger.debug('Paper metadata stored in GitHub');
+    }
+    return { success: true };
+}
 // Handle rating update
-async function handleUpdateRating(rating, sendResponse) {
+async function handleUpdateRating(rating) {
     if (!paperManager || !sessionService) {
-        sendResponse({ success: false, error: 'Services not initialized' });
-        return;
+        return { success: false, error: 'Services not initialized' };
     }
     const session = sessionService.getCurrentSession();
     if (!session) {
-        sendResponse({ success: false, error: 'No current session' });
-        return;
+        return { success: false, error: 'No current session' };
     }
     const metadata = sessionService.getPaperMetadata();
     if (!metadata) {
-        sendResponse({ success: false, error: 'No paper metadata available' });
-        return;
+        return { success: false, error: 'No paper metadata available' };
     }
-    try {
-        await paperManager.updateRating(session.sourceId, session.paperId, rating, metadata);
-        // Update stored metadata with new rating
-        metadata.rating = rating;
-        sendResponse({ success: true });
-    }
-    catch (error) {
-        logger.error('Error updating rating:', error);
-        sendResponse({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
-    }
+    await paperManager.updateRating(session.sourceId, session.paperId, rating, metadata);
+    // Update stored metadata with new rating
+    metadata.rating = rating;
+    return { success: true };
 }
 // Handle session start request
 function handleStartSession(sourceId, paperId) {
     if (!sessionService) {
         logger.error('Session service not initialized');
-        return;
+        return { success: false, error: 'Services not initialized' };
     }
-    // Get metadata if available
+    // Get metadata if available, then start the session
     const existingMetadata = sessionService.getPaperMetadata(sourceId, paperId);
-    // Start the session
     sessionService.startSession(sourceId, paperId, existingMetadata);
     logger.info(`Started session for ${sourceId}:${paperId}`);
+    return { success: true };
 }
-// Handle session heartbeat
-function handleSessionHeartbeat() {
+// Handle session end request; only the owner of the active session may end it
+function handleEndSession(sourceId, paperId, reason) {
     if (!sessionService) {
-        logger.error('Session service not initialized');
-        return;
-    }
-    sessionService.recordHeartbeat();
-}
-// Handle session end request
-function handleEndSession(reason) {
-    if (!sessionService) {
-        logger.error('Session service not initialized');
-        return;
+        return { success: false, error: 'Services not initialized' };
     }
     const session = sessionService.getCurrentSession();
-    if (session) {
+    if (session && session.sourceId === sourceId && session.paperId === paperId) {
         logger.info(`Ending session: ${reason}`);
         sessionService.endSession();
     }
+    return { success: true };
 }
-async function handleManualPaperLog(metadata) {
-    logger.info(`Received manual paper log: ${metadata.sourceId}:${metadata.paperId}`);
-    try {
-        // Store metadata in session service
-        if (sessionService) {
-            sessionService.storePaperMetadata(metadata);
-        }
-        // Store in GitHub if we have a paper manager
-        if (paperManager) {
-            await paperManager.getOrCreatePaper(metadata);
-            logger.debug('Manually logged paper stored in GitHub');
-        }
+// Listen for credential changes; tokens live in storage.local and must never
+// sync across devices
+chrome.storage.onChanged.addListener((changes, areaName) => {
+    if (areaName !== 'local' || (!changes.githubToken && !changes.githubRepo)) {
+        return;
     }
-    catch (error) {
-        logger.error('Error handling manual paper log', error);
-        throw error;
-    }
-}
-// Listen for credential changes
-chrome.storage.onChanged.addListener(async (changes) => {
-    logger.debug('Storage changes detected', Object.keys(changes));
+    logger.debug('Credential changes detected', Object.keys(changes));
     if (changes.githubToken) {
-        githubToken = changes.githubToken.newValue;
+        githubToken = typeof changes.githubToken.newValue === 'string' ? changes.githubToken.newValue : '';
     }
     if (changes.githubRepo) {
-        githubRepo = changes.githubRepo.newValue;
+        githubRepo = typeof changes.githubRepo.newValue === 'string' ? changes.githubRepo.newValue : '';
     }
-    // Reinitialize paper manager if credentials changed
-    if (changes.githubToken || changes.githubRepo) {
-        if (githubToken && githubRepo) {
-            const githubClient = new d(githubToken, githubRepo);
-            // Pass the source manager to the paper manager
-            paperManager = new PaperManager(githubClient, sourceManager);
-            logger.info('Paper manager reinitialized');
-            // Reinitialize session service with new paper manager
-            sessionService = new SessionService(paperManager);
-            logger.info('Session service reinitialized');
-        }
+    if (!sourceManager) {
+        return;
     }
+    if (githubToken && githubRepo) {
+        const githubClient = new d(githubToken, githubRepo);
+        paperManager = new PaperManager(githubClient, sourceManager);
+        logger.info('Paper manager reinitialized');
+    }
+    else {
+        // Credentials removed: release the stale client so no further requests
+        // are sent with revoked credentials; queued writes stay parked until
+        // valid credentials return
+        paperManager = null;
+        logger.info('GitHub credentials removed; released stale client');
+    }
+    // Keep the session service (and its queued writes) on the current manager
+    sessionService?.setPaperManager(paperManager);
 });
-// Initialize debug objects in service worker scope
+// Expose debug objects on the service worker scope; only wired in
+// development builds (see DEV_BUILD)
 function initializeDebugObjects() {
-    // @ts-ignore
     self.__DEBUG__ = {
         get paperManager() { return paperManager; },
         get sessionService() { return sessionService; },
@@ -1796,11 +2352,11 @@ function initializeDebugObjects() {
         getGithubClient: () => paperManager ? paperManager.getClient() : null,
         getCurrentPaper: () => {
             const session = sessionService?.getCurrentSession();
-            return session ? sessionService?.getPaperMetadata(session.sourceId, session.paperId) : null;
+            return session ? sessionService?.getPaperMetadata(session.sourceId, session.paperId) ?? null : null;
         },
         getSessionStats: () => sessionService?.getSessionStats(),
         getSources: () => sourceManager?.getAllSources(),
-        forceEndSession: () => sessionService?.endSession()
+        forceEndSession: () => sessionService?.endSession() ?? null
     };
     logger.info('Debug objects registered');
 }
