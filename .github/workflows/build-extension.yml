@@ -73,6 +73,9 @@ jobs:
         echo "Error logs (if any):"
         find . -name "*.log" -exec cat {} \;
 
+    - name: Rebase on latest main
+      run: git pull --rebase --autostash origin main
+
     # Commit the built files
     - name: Commit bundled files
       uses: stefanzweifel/git-auto-commit-action@b863ae1933cb653a53c021fe36dbb774e1fb9403 # v5
