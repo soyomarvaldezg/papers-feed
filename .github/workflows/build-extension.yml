@@ -54,6 +54,8 @@ jobs:
       run: npm run type-check
         
     - name: Build extension
+      env:
+        NODE_ENV: production
       run: |
         set -ex
         npm run build

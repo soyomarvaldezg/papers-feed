@@ -3,6 +3,10 @@
   "name": "Academic Paper Tracker",
   "version": "2.0",
   "description": "Track and annotate academic papers from various sources",
+  "background": {
+    "service_worker": "dist/background.bundle.js",
+    "type": "module"
+  },
   "permissions": [
     "storage",
     "activeTab"
