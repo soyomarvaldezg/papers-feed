@@ -105,25 +105,6 @@ jobs:
           name: papers-json
           path: web/
 
-      # Interaction telemetry (interactions:* objects) must never be published
-      # to the public site; only the uploaded copy is filtered, the repo file
-      # keeps the raw data.
-      - name: Strip interaction telemetry from public snapshot
-        run: |
-          python3 - << 'EOF'
-          import json
-          from pathlib import Path
-
-          path = Path("web/gh-store-snapshot.json")
-          snapshot = json.loads(path.read_text())
-          snapshot["objects"] = {
-              object_id: obj
-              for object_id, obj in snapshot.get("objects", {}).items()
-              if not object_id.startswith("interactions:")
-          }
-          path.write_text(json.dumps(snapshot))
-          EOF
-
       - name: Build web directory
         run: |
           cp frontend/* web/
