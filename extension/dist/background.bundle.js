@@ -1950,7 +1950,7 @@ const sourceIntegrations = [
 
 // background.ts
 const logger = loguru.getLogger('background');
-const DEV_BUILD = true === true;
+const DEV_BUILD = false === true;
 // Global state
 let githubToken = '';
 let githubRepo = '';
@@ -2029,9 +2029,7 @@ async function initialize() {
         // Set up message listeners
         setupMessageListeners();
         // Initialize debug objects (development builds only)
-        if (DEV_BUILD) {
-            initializeDebugObjects();
-        }
+        if (DEV_BUILD) ;
     }
     catch (error) {
         logger.error('Initialization error', error);
