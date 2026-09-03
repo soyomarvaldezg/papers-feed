@@ -1,5 +1,5 @@
 {
-  "snapshot_time": "2026-09-03T02:21:36.564487+00:00",
+  "snapshot_time": "2026-09-03T02:35:30.906597+00:00",
   "repository": "soyomarvaldezg/papers-feed",
   "objects": {
     "interactions:arxiv.2608.22474": {
@@ -1128,6 +1128,33 @@
         "object_id": "paper:arxiv.2609.02106",
         "created_at": "2026-09-03T02:20:41+00:00",
         "updated_at": "2026-09-03T02:21:03+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2609.01975": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2609.01975",
+        "url": "https://arxiv.org/abs/2609.01975",
+        "title": "RT-HiSS: Ray Tracing Accelerated High Dimensional Vector Similarity Searches",
+        "authors": "Revanth Reddy Munugala, Michael Gowanlock",
+        "abstract": "Recent GPU generations include special-purpose ray tracing (RT) cores for graphics applications. While RT cores are primarily used for rendering, recent works show they can be leveraged for general-purpose tasks, including similarity searches. However, existing approaches do not support datasets exceeding three dimensions. In this work, we propose RT-HiSS, the first exact GPU RT-core-based similarity search algorithm for high-dimensional datasets. GPU similarity search often scales poorly for large datasets with substantial search distances. To address this, RT-HiSS uses RT cores for fast index construction and searches, followed by candidate refinement on CUDA cores. We introduce a two-pass approach to estimate an upper bound on result size, enabling efficient batching under GPU memory constraints with near-perfect load balancing. Additionally, we examine shared memory tiling and compressed result masks to improve GPU resource utilization. RT-HiSS yields speedups up to 8.37$\\times$ over competitive state-of-the-art GPU algorithms and up to 2,368.26$\\times$ relative to the brute-force algorithm across six real-world datasets.",
+        "timestamp": "2026-09-03T02:34:40.242Z",
+        "publishedDate": "2026/09/02",
+        "tags": [
+          "Distributed",
+          "Parallel",
+          "and Cluster Computing (cs.DC)",
+          "Databases (cs.DB)"
+        ],
+        "rating": "novote",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 44,
+        "object_id": "paper:arxiv.2609.01975",
+        "created_at": "2026-09-03T02:34:40+00:00",
+        "updated_at": "2026-09-03T02:35:03+00:00",
         "version": 1
       }
     }
