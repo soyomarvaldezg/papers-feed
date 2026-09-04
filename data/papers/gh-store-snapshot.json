@@ -1,5 +1,5 @@
 {
-  "snapshot_time": "2026-09-04T15:14:06.819648+00:00",
+  "snapshot_time": "2026-09-04T15:16:36.473630+00:00",
   "repository": "soyomarvaldezg/papers-feed",
   "objects": {
     "interactions:arxiv.2608.22474": {
@@ -1384,6 +1384,45 @@
         "object_id": "paper:arxiv.2609.04198",
         "created_at": "2026-09-04T15:13:20+00:00",
         "updated_at": "2026-09-04T15:13:40+00:00",
+        "version": 1
+      }
+    },
+    "interactions:arxiv.2609.04198": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2609.04198",
+        "interactions": []
+      },
+      "meta": {
+        "issue_number": 56,
+        "object_id": "interactions:arxiv.2609.04198",
+        "created_at": "2026-09-04T15:15:47+00:00",
+        "updated_at": "2026-09-04T15:15:50+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2609.03505": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2609.03505",
+        "url": "https://arxiv.org/abs/2609.03505",
+        "title": "An Adversarial Zero-Shot Learning Approach for Anomaly Detection in Multivariate IoT Traffic Data",
+        "authors": "Mahshid Rezakhani, Tolunay Seyfi, Fatemeh Afghah",
+        "abstract": "Anomaly detection in Internet of Things (IoT) networks presents unique challenges due to the diversity of devices, lack of labeled data, and domain variability across environments. In this paper, we propose a novel framework for multivariate time-series anomaly detection that leverages adversarial learning and contrastive loss within a sequence-based Variational Autoencoder (VAE) architecture. Our method enables zero-shot domain adaptation by jointly optimizing domain-invariant latent representations and semantically structured embedding spaces, without requiring labeled data or raw feature transfer. To address the heterogeneity of IoT deployments, we introduce encoder and decoder adaptor layers that align feature distributions across domains while preserving contextual semantics. Additionally, we propose a destination-based segmentation strategy to better model real-world communication structures in IoT traffic. Our framework is comprehensively evaluated on six distinct datasets spanning industrial, enterprise, general-purpose, smart home, and military automation domains across 44 transfer scenarios. Experimental results demonstrate strong zero-shot generalization in several cross-domain settings and competitive performance against a contrastive domain-adaptation baseline under realistic, heterogeneous, and privacy-constrained IoT conditions.",
+        "timestamp": "2026-09-04T15:15:46.731Z",
+        "publishedDate": "2026/09/03",
+        "tags": [
+          "Machine Learning (cs.LG)",
+          "Networking and Internet Architecture (cs.NI)"
+        ],
+        "rating": "novote",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 55,
+        "object_id": "paper:arxiv.2609.03505",
+        "created_at": "2026-09-04T15:15:47+00:00",
+        "updated_at": "2026-09-04T15:16:08+00:00",
         "version": 1
       }
     }
