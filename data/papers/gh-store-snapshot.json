@@ -1,5 +1,5 @@
 {
-  "snapshot_time": "2026-09-03T03:50:27.461218+00:00",
+  "snapshot_time": "2026-09-04T15:09:37.723408+00:00",
   "repository": "soyomarvaldezg/papers-feed",
   "objects": {
     "interactions:arxiv.2608.22474": {
@@ -1162,13 +1162,77 @@
       "data": {
         "sourceId": "arxiv",
         "paperId": "2609.01975",
-        "interactions": []
+        "interactions": [
+          {
+            "type": "reading_session",
+            "timestamp": "2026-09-04T15:08:27.747Z",
+            "data": {
+              "duration_seconds": 30,
+              "end_time": "2026-09-03T02:35:42.285Z",
+              "heartbeat_count": 6,
+              "idle_seconds": 4,
+              "paper_id": "2609.01975",
+              "session_id": "session_1788402942285_vngvw2q",
+              "source_id": "arxiv",
+              "start_time": "2026-09-03T02:35:07.885Z",
+              "total_elapsed_seconds": 34
+            }
+          }
+        ]
       },
       "meta": {
         "issue_number": 45,
         "object_id": "interactions:arxiv.2609.01975",
         "created_at": "2026-09-03T02:35:43+00:00",
-        "updated_at": "2026-09-03T02:35:44+00:00",
+        "updated_at": "2026-09-04T15:08:46+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2609.03141": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2609.03141",
+        "url": "https://arxiv.org/abs/2609.03141",
+        "title": "What Happens When the Model Eats the Stack? Rethinking the Research Agenda for Data Agents to Withstand the Bitter Lesson",
+        "authors": "Liana Patel, Siddharth Jha, Negar Arabzadeh, Carlos Guestrin, Ion Stoica, Matei Zaharia",
+        "abstract": "The bitter lesson poses an existential question for the data systems community, whereby large language models (LLMs) trained end-to-end are rapidly internalizing new capabilities that previously required carefully engineered data agents. Guided by empirical insights, we argue that as models continue to improve, many proposed system layers designed to compensate for model limitations on a given task will increasingly be subsumed by the model itself. We instead identify enduring research opportunities, which lie in supporting data agents across many queries with curated contextual information about the data environment, which we call persistent semantic context. We find that these context layers demonstrate strong promise for improving data agent performance, but they also raise significant system challenges. Thus, a key requirement for future data systems will lie in natively serving persistent semantic contexts as a first-class abstraction in order to enable capable data agents working over huge, complex knowledge corpora. Towards this vision, we outline exciting new research opportunities, including designing efficient context data structures, storage methods, compression techniques, and semantic consistency protocols, to ensure integrity and correctness of the stored contextual knowledge.",
+        "timestamp": "2026-09-04T15:08:51.929Z",
+        "publishedDate": "2026/09/02",
+        "tags": [
+          "Databases (cs.DB)"
+        ],
+        "rating": "novote",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 47,
+        "object_id": "paper:arxiv.2609.03141",
+        "created_at": "2026-09-04T15:08:52+00:00",
+        "updated_at": "2026-09-04T15:09:10+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2609.03898": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2609.03898",
+        "url": "https://arxiv.org/abs/2609.03898",
+        "title": "From Data Querying to Data Investigations: Rethinking Natural Language Interfaces for Databases",
+        "authors": "Fabian Wenz, Zixuan Chen, Carsten Binnig",
+        "abstract": "Natural language (NL) interfaces to databases have been optimized for the wrong problem. The dominant Text-to-SQL paradigm assumes that users ask questions that can be answered by single SQL queries. In practice, however, users seek assistance with solving data problems. This requires searching a database by sequences of SQL queries while reasoning over intermediate results instead of just running one SQL query. This paper therefore introduces a new paradigm for NL interfaces to data, which we call data investigations. We present D^2, a first prototype of a data investigation system that embodies this vision by autonomously searching, reasoning over, and collecting data to solve data problems. Using a newly constructed benchmark based on the Murder Mystery dataset, we demonstrate the potential of D^2 for tasks that require data investigations with evidence-backed decisions, extending beyond the capabilities of traditional single-query question answering.",
+        "timestamp": "2026-09-04T15:08:39.163Z",
+        "publishedDate": "2026/09/03",
+        "tags": [
+          "Databases (cs.DB)"
+        ],
+        "rating": "novote",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 46,
+        "object_id": "paper:arxiv.2609.03898",
+        "created_at": "2026-09-04T15:08:39+00:00",
+        "updated_at": "2026-09-04T15:09:02+00:00",
         "version": 1
       }
     }
