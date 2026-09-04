@@ -1,5 +1,5 @@
 {
-  "snapshot_time": "2026-09-04T15:09:37.723408+00:00",
+  "snapshot_time": "2026-09-04T15:12:03.965130+00:00",
   "repository": "soyomarvaldezg/papers-feed",
   "objects": {
     "interactions:arxiv.2608.22474": {
@@ -1233,6 +1233,132 @@
         "object_id": "paper:arxiv.2609.03898",
         "created_at": "2026-09-04T15:08:39+00:00",
         "updated_at": "2026-09-04T15:09:02+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2609.03721": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2609.03721",
+        "url": "https://arxiv.org/abs/2609.03721",
+        "title": "Can LLMs Extract Architectural Design Decisions from Source Code Commits? - A Preliminary Exploratory Study",
+        "authors": "Amey Karan, Rudra Dhar, Mohamed Soliman, Karthik Vaidhyanathan",
+        "abstract": "Context: Architectural Design Decisions (ADDs) capture the rationale behind the structure and evolution of software systems but are rarely documented explicitly, and are often hidden inside source code commits. Recovering them is important for Architectural Knowledge Management (AKM). Problem: Extracting ADDs from commits is challenging due to their implicit and unstructured nature. Large Language Models (LLMs) have shown strong capabilities in understanding code and text, yet their effectiveness for this task remains underexplored. Study: We present a preliminary study using four LLMs (Gemini 3 Pro, DeepSeek R1, Kimi K2, Qwen3) with zeroshot and fewshot prompting on 30 developer-written ADDs from open-source projects. We score outputs with ROUGE-L, BLEU, METEOR, and BERTScore, and one author manually reviews the Gemini outputs. Results: All models reach a BERT-F1 above 0.81, and fewshot prompting improves alignment (Gemini BERT-F1: 0.828 to 0.847). However, the generated ADDs are often too long, implementation-focused, and miss the rationale behind the decision. This highlights opportunities for architecture-aware LLM systems and automated AKM.",
+        "timestamp": "2026-09-04T15:10:44.042Z",
+        "publishedDate": "2026/09/03",
+        "tags": [
+          "Software Engineering (cs.SE)",
+          "Artificial Intelligence (cs.AI)"
+        ],
+        "rating": "novote",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 52,
+        "object_id": "paper:arxiv.2609.03721",
+        "created_at": "2026-09-04T15:10:44+00:00",
+        "updated_at": "2026-09-04T15:11:10+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2609.03861": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2609.03861",
+        "url": "https://arxiv.org/abs/2609.03861",
+        "title": "No One Left Behind: Cross-Level Analysis for Sustainable Software Engineering",
+        "authors": "Masoum Salehi, Sandro Schulze, Jacob Kr\u00fcger",
+        "abstract": "Software engineers expect a software system to be efficient, maintainable, economically viable, and socially responsible throughout its lifecycle. Unfortunately, decisions made at the organizational, process, or product levels of software development - even when they improve one of these goals - often have unintended long-term consequences at other levels. In response, software-engineering research has explored different ways to achieve software sustainability, including energy efficiency, resource optimization, and code maintainability. However, existing research offers limited explanations for how sustainability problems emerge and reinforce one another across the socio-technical levels of software engineering. Moreover, we argue that sustainability challenges are not isolated but rather systemic: They stem from interactions among organizational priorities, development practices, and technical conditions. In this vision paper, we introduce the concept of sustainability antipatterns to capture conditions that systematically produce unsustainable outcomes. We demonstrate how this concept can help expose cross-level misalignments between socio-technical levels and sustainability dimensions that remain difficult to recognize through artifact-centric or dimension-specific analyses. To guide future research, we outline concrete directions for identifying, formalizing, detecting, and mitigating sustainability anti-patterns. We envision sustainability anti-patterns as a foundation for an integrated and actionable research agenda on sustainable software engineering.",
+        "timestamp": "2026-09-04T15:10:35.470Z",
+        "publishedDate": "2026/09/03",
+        "tags": [
+          "Software Engineering (cs.SE)"
+        ],
+        "rating": "novote",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 51,
+        "object_id": "paper:arxiv.2609.03861",
+        "created_at": "2026-09-04T15:10:35+00:00",
+        "updated_at": "2026-09-04T15:10:55+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2609.04061": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2609.04061",
+        "url": "https://arxiv.org/abs/2609.04061",
+        "title": "When Models Edit Too Much: On the Fidelity of Minimal Code Edits",
+        "authors": "Tongyao Zhu, Wei Hern Lim, Min-Yen Kan",
+        "abstract": "Large language models (LLMs) are increasingly used to edit existing code, but correctness alone is not enough: useful repairs should also be minimal, reviewable, and faithful to the original implementation. We study over-editing, the tendency of a model to rewrite code beyond what is required to fix a bug. We construct an evaluation framework from 400 BigCodeBench problems by injecting controlled AST-level corruptions into reference solutions, giving each repair task a known minimal patch. Across frontier LLMs, over-editing is widespread even among strong models like GPT-5.5: high Pass@1 can coexist with unnecessarily large edits and added cognitive complexity. A preservation instruction substantially reduces this behavior, lowering average excess Levenshtein distance from 0.195 to 0.131, reducing added cognitive complexity by 26.6%, and increasing Pass@1 by 2.3 points. However, these gains do not simply follow from a larger reasoning budget or larger models. We next ask whether minimal editing can be learned directly during post-training. We observe that supervised fine-tuning overfits to seen corruption patterns, whereas reinforcement learning gives the best out-of-domain edit-fidelity and performance-retention trade-off. These results position edit fidelity as a distinct axis of code-repair quality and show that it can be measured and learned.",
+        "timestamp": "2026-09-04T15:10:20.515Z",
+        "publishedDate": "2026/09/03",
+        "tags": [
+          "Software Engineering (cs.SE)",
+          "Artificial Intelligence (cs.AI)",
+          "Computation and Language (cs.CL)"
+        ],
+        "rating": "novote",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 50,
+        "object_id": "paper:arxiv.2609.04061",
+        "created_at": "2026-09-04T15:10:20+00:00",
+        "updated_at": "2026-09-04T15:10:43+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2609.04167": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2609.04167",
+        "url": "https://arxiv.org/abs/2609.04167",
+        "title": "SWE-Gate: Passing Functional Tests Is Not Enough for Software Engineering Agents",
+        "authors": "Xin He, Yanlin Wang, Mingwei Liu, Jiachi Chen, Hongyu Zhang, Guanbin Li",
+        "abstract": "Repository-level software engineering benchmarks have significantly advanced the evaluation of coding agents, but existing benchmarks primarily measure whether generated patches pass functional tests and overlook review-derived acceptance constraints (review constraints) that often influence whether a patch is acceptable in real-world software development. We introduce SWE-Gate, a repository-level benchmark for software engineering agents that explicitly evaluates review constraint compliance alongside functional correctness. SWE-Gate derives review constraints from real pull request review comments and synthesizes repository-level repair instances around these constraints. Each instance provides separate functional and constraint tests, together with non-compliant and gold patches, enabling explicit separation between issue resolution capability and review constraint compliance. We construct SWE-Gate with 303 repository-level repair instances spanning 75 open-source Python repositories across diverse software domains. Experiments with four LLM backends spanning different capability levels under a common coding-agent scaffold reveal a substantial gap between functional success and success under the complete repair specification: among 644 repairs that pass the functional tests, 221 fail to satisfy the provided review constraints. These findings show that functional-only evaluation overestimates agents' ability to satisfy the full requirements of repository-level repair tasks. The replication package including code, data, and experimental results is available at this https URL.",
+        "timestamp": "2026-09-04T15:09:48.380Z",
+        "publishedDate": "2026/09/03",
+        "tags": [
+          "Software Engineering (cs.SE)",
+          "Artificial Intelligence (cs.AI)"
+        ],
+        "rating": "novote",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 49,
+        "object_id": "paper:arxiv.2609.04167",
+        "created_at": "2026-09-04T15:09:48+00:00",
+        "updated_at": "2026-09-04T15:10:11+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2609.03297": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2609.03297",
+        "url": "https://arxiv.org/abs/2609.03297",
+        "title": "A Technique for Load Shifting Low-latency Applications in Multi-Region Renewables Harvesting via SMT Core Pooling",
+        "authors": "Tharindu B. Hewage, Shashikant Ilager, Maria A. Rodriguez, Rajkumar Buyya",
+        "abstract": "Load shifting across geographic regions to chase intermittent renewable energy availability is commonly used in reducing cloud infrastructure carbon footprint. However, it often omits low-latency applications due to high latency variances of wide area networks (WAN) that interconnect regions. This paper addresses accommodating low-latency applications into load shifting by minimizing their shifting across the WAN. We propose a technique using a hardware-software co-design approach. At the hardware level, we conduct server load matching over renewables supply peaks and valleys by deep idling physical cores in two otherwise identical server pools, with one enabling simultaneous multi-threading (SMT) in CPUs. In return, we achieve a static set of logical cores amidst energy supply dynamics, reducing the probability of workload shifting. At the software level, we efficiently chase the static set of cores for low-latency applications within regions while prioritizing best-effort applications to accommodate shifting requirements across WANs. Our approach exploits the lower performance compromise of SMT cores due to their hardware multi-threading. We implement the proposed technique with OpenStack and CPU idle states and evaluate its performance on a real experimental testbed with Azure VM arrival traces. Results show an 80% reduction in offloading low-latency VMs and a 43.81% reduction in coefficient of variation of p90 end-user latency while having a worst-case latency compromise of 11.97% due to SMT cores.",
+        "timestamp": "2026-09-04T15:09:36.089Z",
+        "publishedDate": "2026/09/03",
+        "tags": [
+          "Distributed",
+          "Parallel",
+          "and Cluster Computing (cs.DC)"
+        ],
+        "rating": "novote",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 48,
+        "object_id": "paper:arxiv.2609.03297",
+        "created_at": "2026-09-04T15:09:36+00:00",
+        "updated_at": "2026-09-04T15:09:55+00:00",
         "version": 1
       }
     }
