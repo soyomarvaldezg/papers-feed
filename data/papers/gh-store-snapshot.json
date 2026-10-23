@@ -1,5 +1,5 @@
 {
-  "snapshot_time": "2026-10-21T14:48:42.207987+00:00",
+  "snapshot_time": "2026-10-23T19:59:19.062729+00:00",
   "repository": "soyomarvaldezg/papers-feed",
   "objects": {
     "interactions:arxiv.2608.22474": {
@@ -1695,6 +1695,31 @@
         "object_id": "paper:arxiv.2610.14162",
         "created_at": "2026-10-21T14:47:27+00:00",
         "updated_at": "2026-10-21T14:47:52+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2508.13171": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2508.13171",
+        "url": "https://arxiv.org/abs/2508.13171",
+        "title": "Cognitive Workspace: Active Memory Management for LLMs -- An Empirical Study of Functional Infinite Context",
+        "authors": "Tao An",
+        "abstract": "Large Language Models (LLMs) face fundamental limitations in context management despite recent advances extending context windows to millions of tokens. We propose Cognitive Workspace, a novel paradigm that transcends traditional Retrieval-Augmented Generation (RAG) by emulating human cognitive mechanisms of external memory use. Drawing from cognitive science foundations including Baddeley's working memory model, Clark's extended mind thesis, and Hutchins' distributed cognition framework, we demonstrate that current passive retrieval systems fail to capture the dynamic, task-driven nature of human memory management. Our analysis of 2024-2025 developments reveals that while techniques like Infini-attention and StreamingLLM achieve impressive context lengths, they lack the metacognitive awareness and active planning capabilities essential for true cognitive extension. Cognitive Workspace addresses these limitations through three core innovations: (1) active memory management with deliberate information curation, (2) hierarchical cognitive buffers enabling persistent working states, and (3) task-driven context optimization that dynamically adapts to cognitive demands. Empirical validation demonstrates Cognitive Workspace achieves an average 58.6% memory reuse rate (ranging from 54-60% across different tasks) compared to 0% for traditional RAG, with 17-18% net efficiency gain despite 3.3x higher operation counts. Statistical analysis confirms these advantages with p < 0.001 and Cohen's d > 23 across multiple task types, establishing the first quantitative evidence for active memory superiority in LLM systems. We present a comprehensive theoretical framework synthesizing insights from 50+ recent papers, positioning Cognitive Workspace as a fundamental shift from information retrieval to genuine cognitive augmentation.",
+        "timestamp": "2026-10-23T19:58:33.157Z",
+        "publishedDate": "2025/08/08",
+        "tags": [
+          "Artificial Intelligence (cs.AI)",
+          "Computation and Language (cs.CL)"
+        ],
+        "rating": "novote",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 69,
+        "object_id": "paper:arxiv.2508.13171",
+        "created_at": "2026-10-23T19:58:33+00:00",
+        "updated_at": "2026-10-23T19:58:55+00:00",
         "version": 1
       }
     }
