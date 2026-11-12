@@ -1,5 +1,5 @@
 {
-  "snapshot_time": "2026-10-23T20:00:00.035159+00:00",
+  "snapshot_time": "2026-11-12T17:51:23.049777+00:00",
   "repository": "soyomarvaldezg/papers-feed",
   "objects": {
     "interactions:arxiv.2608.22474": {
@@ -1720,6 +1720,36 @@
         "object_id": "paper:arxiv.2508.13171",
         "created_at": "2026-10-23T19:59:16+00:00",
         "updated_at": "2026-10-23T19:59:37+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2611.12169": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2611.12169",
+        "url": "https://arxiv.org/abs/2611.12169",
+        "title": "Transactional Data Change for Real-Time Analytics in Lakehouses",
+        "authors": "Dongyang Geng, Haoqiong Bian, Zinuo Li, Haoyue Li",
+        "abstract": "Real-time data analytics has become a key demand for lakehouses. It requires propagating data changes from the data source to the lakehouse in real time, while ensuring ACID guarantees and minimizing resource consumption and impact on analytical query performance. This is highly challenging for a data system according to the RUM conjecture, especially given the read-optimized immutable file storage layer in lakehouses. Existing lakehouses offer only git-style catalog version control on a single table, and they trade data freshness, query performance, and/or resource efficiency to achieve a barely acceptable data-change throughput. In this paper, we propose a novel data synchronization framework, Retina, that enables real-time, cost-efficient, query-performant, and fully transactional data changes in lakehouses. We implement and open-source Retina. Evaluations show that Retina delivers 10-millisecond-level data freshness and over 3.2 million row/s linear-scalable data-change throughput with low resource consumption and query-performance overhead, significantly outperforming state-of-the-art lakehouse systems and lake-compatible HTAP databases.",
+        "timestamp": "2026-11-12T17:50:28.710Z",
+        "publishedDate": "2026/11/09",
+        "tags": [
+          "Databases (cs.DB)",
+          "Artificial Intelligence (cs.AI)",
+          "Distributed",
+          "Parallel",
+          "and Cluster Computing (cs.DC)",
+          "Performance (cs.PF)"
+        ],
+        "rating": "novote",
+        "doi": "10.14778/3849398.3849411",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 71,
+        "object_id": "paper:arxiv.2611.12169",
+        "created_at": "2026-11-12T17:50:29+00:00",
+        "updated_at": "2026-11-12T17:50:50+00:00",
         "version": 1
       }
     }
