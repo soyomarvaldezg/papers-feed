@@ -1,5 +1,5 @@
 {
-  "snapshot_time": "2026-11-13T05:56:33.010597+00:00",
+  "snapshot_time": "2026-11-13T17:09:00.760223+00:00",
   "repository": "soyomarvaldezg/papers-feed",
   "objects": {
     "interactions:arxiv.2608.22474": {
@@ -1757,13 +1757,51 @@
       "data": {
         "sourceId": "arxiv",
         "paperId": "2611.12169",
-        "interactions": []
+        "interactions": [
+          {
+            "type": "reading_session",
+            "timestamp": "2026-11-13T17:07:26.667Z",
+            "data": {
+              "duration_seconds": 125,
+              "end_time": "2026-11-12T17:52:49.777Z",
+              "heartbeat_count": 25,
+              "idle_seconds": 1,
+              "paper_id": "2611.12169",
+              "session_id": "session_1794505969777_uznxm1h",
+              "source_id": "arxiv",
+              "start_time": "2026-11-12T17:50:43.458Z",
+              "total_elapsed_seconds": 126
+            }
+          }
+        ]
       },
       "meta": {
         "issue_number": 72,
         "object_id": "interactions:arxiv.2611.12169",
         "created_at": "2026-11-12T17:52:51+00:00",
-        "updated_at": "2026-11-12T17:52:54+00:00",
+        "updated_at": "2026-11-13T17:07:54+00:00",
+        "version": 1
+      }
+    },
+    "paper:arxiv.2611.17304": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2611.17304",
+        "url": "https://arxiv.org/pdf/2611.17304",
+        "title": "",
+        "authors": "",
+        "abstract": "",
+        "timestamp": "2026-11-13T17:08:07.316Z",
+        "publishedDate": "",
+        "tags": [],
+        "rating": "novote",
+        "sourceType": "url"
+      },
+      "meta": {
+        "issue_number": 73,
+        "object_id": "paper:arxiv.2611.17304",
+        "created_at": "2026-11-13T17:08:08+00:00",
+        "updated_at": "2026-11-13T17:08:29+00:00",
         "version": 1
       }
     }
