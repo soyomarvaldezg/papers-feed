@@ -1,5 +1,5 @@
 {
-  "snapshot_time": "2026-11-13T17:09:00.760223+00:00",
+  "snapshot_time": "2026-11-13T17:14:43.878855+00:00",
   "repository": "soyomarvaldezg/papers-feed",
   "objects": {
     "interactions:arxiv.2608.22474": {
@@ -1802,6 +1802,20 @@
         "object_id": "paper:arxiv.2611.17304",
         "created_at": "2026-11-13T17:08:08+00:00",
         "updated_at": "2026-11-13T17:08:29+00:00",
+        "version": 1
+      }
+    },
+    "interactions:arxiv.2611.17304": {
+      "data": {
+        "sourceId": "arxiv",
+        "paperId": "2611.17304",
+        "interactions": []
+      },
+      "meta": {
+        "issue_number": 74,
+        "object_id": "interactions:arxiv.2611.17304",
+        "created_at": "2026-11-13T17:09:35+00:00",
+        "updated_at": "2026-11-13T17:09:38+00:00",
         "version": 1
       }
     }
